@@ -1,0 +1,332 @@
+:root {
+    --sidebar-width: 280px;
+    --sidebar-collapsed-width: 70px;
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --text-light: #f8f9fa;
+    --transition-speed: 1s;
+    --primary: #6366F1;
+    --primary-dark: #4F46E5;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --info: #3B82F6;
+    --dark: #1F2937;
+    --light: #F9FAFB;
+    --gray: #9CA3AF;
+    --border-radius: 12px;
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    --transition: all 0.8s ease-in-out;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-color: #f8f9fa;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+#sidebar {
+    width: var(--sidebar-width);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 999;
+    background: #ffffff;
+    color: #212529;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-speed) ease;
+}
+
+#sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: var(--primary-color);
+    color: var(--text-light);
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+}
+
+#sidebar ul li a {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    color: #000000;
+    text-decoration: none;
+    transition: all var(--transition-speed) ease;
+    border-left: 4px solid transparent;
+}
+
+#sidebar ul li a:hover {
+    background: #f1f3f9;
+    border-left: 4px solid var(--primary-color);
+}
+
+#sidebar ul li a.active {
+    background: #e9ecef;
+    border-left: 4px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+#sidebar .sidebar-header .logo-text {
+    transition: all var(--transition-speed) ease;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+#sidebar.collapsed .sidebar-header .logo-text {
+    opacity: 0;
+    display: none;
+}
+
+#sidebar ul li a .menu-text {
+    margin-left: 10px;
+    
+}
+
+li a .submenu-text {
+    margin-left: 10px;
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+li a .sub-icon {
+  margin-left: 10px;
+   color: #838c93;
+   
+}
+
+
+#sidebar.collapsed ul li a .submenu-text {
+    opacity: 0;
+    display: none;
+}
+
+
+#sidebar.collapsed ul li a .menu-text {
+    opacity: 0;
+    display: none;
+}
+
+#sidebar .sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 15px;
+    background: #ffffff;
+    border-top: 1px solid #e9ecef;
+}
+
+#sidebar.collapsed .sidebar-footer span {
+    opacity: 0;
+    display: none;
+}
+
+#content {
+    width: calc(100% - var(--sidebar-width));
+    margin-left: var(--sidebar-width);
+    transition: all var(--transition-speed) ease;
+    padding: 20px;
+}
+
+#content.expanded {
+    width: calc(100% - var(--sidebar-collapsed-width));
+    margin-left: var(--sidebar-collapsed-width);
+}
+
+.nav-item {
+    position: relative;
+}
+
+
+
+
+.submenu.show {
+    max-height: 500px;
+}
+
+
+
+
+
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: calc(-1 * var(--sidebar-width));
+    }
+    
+    #sidebar.active {
+        margin-left: 0;
+    }
+    
+    #content {
+        width: 100%;
+        margin-left: 0;
+    }
+    
+    #content.expanded {
+        width: 100%;
+        margin-left: 0;
+    }
+    
+    #sidebarCollapse {
+        display: block;
+    }
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 20px;
+}
+.dashboard-header {
+    background-color: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.data-control {
+    margin-bottom: 20px;
+}
+
+.inventory-table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+
+  .inventory-table th, .inventory-table td {
+    vertical-align: middle;
+    padding: 0.75rem;
+  }
+
+  .item-id {
+    font-weight: 600;
+    color: #0d6efd;
+  }
+
+  .item-name {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .status-badge-in-stock {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+
+  .status-badge-low-stock {
+    background-color: #fff3cd;
+    color: #664d03;
+  }
+
+  .status-badge-out-stock {
+    background-color: #f8d7da;
+    color: #842029;
+  }
+
+  .category-pill {
+    padding: 0.35rem 0.75rem;
+    background-color: #e2e3e5;
+    color: #495057;
+    border-radius: 20px;
+    font-size: 0.8rem;
+  }
+
+  .price {
+    font-weight: 500;
+    color: #198754;
+  }
+
+  .action-icon {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #6c757d;
+  }
+
+  .action-icon:hover {
+    color: #0d6efd;
+  }
+
+  .table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .pagination {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .pagination-item {
+    border: none;
+    background-color: #e9ecef;
+    color: #212529;
+    padding: 0.5rem 0.75rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .pagination-item.active, .pagination-item:hover {
+    background-color: #0d6efd;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .inventory-table thead {
+      display: none;
+    }
+
+    .inventory-table tbody tr {
+      display: block;
+      margin-bottom: 1rem;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 1rem;
+    }
+
+    .inventory-table td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+    }
+
+    .inventory-table td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #495057;
+    }
+  }

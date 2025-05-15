@@ -1,0 +1,66 @@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+
+<div class="container-fluid mt-4">
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <div class="data-control">
+                    <label for="dataRange" class="form-label">Data Range</label>
+                    <select id="dataRange" class="form-select" onchange="updateCharts()">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Revenue Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Sales Trend</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Monthly Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
