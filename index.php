@@ -289,10 +289,10 @@ if (!isset($_SESSION['userID'])) {
                         }
 
                         function validateFileSize(input) {
-                            const maxSize = 5 * 1024 * 1024; // 5 MB
+                            const maxSize = 5 * 1024 * 1024;
                             if (input.files[0] && input.files[0].size > maxSize) {
                                 alert("The selected file is too large. Maximum allowed size is 5 MB.");
-                                input.value = ''; // Clear the file input
+                                input.value = '';
                             }
                         }
 
@@ -335,44 +335,10 @@ if (!isset($_SESSION['userID'])) {
                             });
                         }
 
-                        function bindEditButtons() {
-                            const editButtons = document.querySelectorAll('.edit-button');
-
-                            editButtons.forEach(button => {
-                                button.addEventListener('click', function () {
-                                    document.getElementById('editItemID').value = this.dataset.id;
-                                    document.getElementById('editItemName').value = this.dataset.name;
-                                    document.getElementById('editItemBrand').value = this.dataset.brand;
-                                    document.getElementById('editItemQuantity').value = this.dataset.quantity;
-                                    document.getElementById('editItemPrice').value = this.dataset.price;
-                                    document.getElementById('editItemCategory').value = this.dataset.category;
-                                    document.getElementById('editItemStatus').value = this.dataset.status;
-
-                                    const imgBase64 = this.dataset.image;
-                                    if (imgBase64) {
-                                        document.getElementById('editItemImagePreview').src = "data:image/jpeg;base64," + imgBase64;
-                                    }
-                                });
-                            });
-                        }
-
-
-                        function refreshItemsTable() {
-                            fetch('load_items_table.php')
-                                .then(res => res.text())
-                                .then(html => {
-                                    document.getElementById('itemsTableBody').innerHTML = html;
-
-                                    // Re-bind edit button event listeners
-                                    bindEditButtons();
-                                });
-                        }
 
                         document.querySelectorAll('.table-filter-btn').forEach(button => {
                             button.addEventListener('click', () => {
-                                // Remove "active" class from all buttons
                                 document.querySelectorAll('.table-filter-btn').forEach(btn => btn.classList.remove('active'));
-                                // Add "active" class to clicked button
                                 button.classList.add('active');
 
                                 const filter = button.getAttribute('data-filter');
@@ -381,7 +347,7 @@ if (!isset($_SESSION['userID'])) {
                                 rows.forEach(row => {
                                     const status = row.getAttribute('data-status');
 
-                                    // Show all rows if filter is "all", otherwise match status
+
                                     if (filter === 'all' || status === filter) {
                                         row.style.display = '';
                                     } else {
@@ -391,28 +357,7 @@ if (!isset($_SESSION['userID'])) {
                             });
                         });
 
-                        const editButtons = document.querySelectorAll('.edit-button');
 
-                        editButtons.forEach(button => {
-                            button.addEventListener('click', function () {
-                                document.getElementById('editItemID').value = this.dataset.id;
-                                document.getElementById('editItemName').value = this.dataset.name;
-                                document.getElementById('editItemBrand').value = this.dataset.brand;
-                                document.getElementById('editItemQuantity').value = this.dataset.quantity;
-                                document.getElementById('editItemPrice').value = this.dataset.price;
-                                document.getElementById('editItemCategory').value = this.dataset.category;
-                                document.getElementById('editItemStatus').value = this.dataset.status;
-
-                                // Set image preview
-                                const imagePreview = document.getElementById('editItemImagePreview');
-                                if (this.dataset.image) {
-                                    imagePreview.src = 'data:image/jpeg;base64,' + this.dataset.image;
-                                    imagePreview.style.display = 'block';
-                                } else {
-                                    imagePreview.style.display = 'none';
-                                }
-                            });
-                        });
 
 
 
@@ -426,6 +371,8 @@ if (!isset($_SESSION['userID'])) {
                             const prevBtn = document.getElementById('prevBtn');
                             const nextBtn = document.getElementById('nextBtn');
                             const formFooter = document.querySelector('.form-footer');
+                            const itemSelect = document.getElementById('itemName');
+                            const quantitySpan = document.getElementById('availableQuantity');
                             let currentStep = 0;
 
                             prevBtn.addEventListener('click', () => {
@@ -507,7 +454,7 @@ if (!isset($_SESSION['userID'])) {
                                     }
                                 });
 
-                                // ✅ Require agreeTerms to be checked globally, even on step 0
+
                                 const agreeTerms = document.getElementById('agreeTerms');
                                 if (agreeTerms && !agreeTerms.checked) {
                                     allFilled = false;
@@ -532,25 +479,54 @@ if (!isset($_SESSION['userID'])) {
 
                             attachStepValidationListeners();
                             showStep(currentStep);
+
+                            itemSelect.addEventListener('change', function () {
+                                const selectedOption = this.options[this.selectedIndex];
+                                const quantity = selectedOption.dataset.quantity || 'N/A';
+                                quantitySpan.textContent = quantity;
+                            });
                         }
 
                         if (url === 'view_all_item.php') {
-                            // Load page 1 by default
-                            fetch('fetch_item_tables.php?page=1')
-                                .then(response => response.text())
-                                .then(html => {
-                                    document.getElementById('itemsTableBody').innerHTML = html;
 
-                                    // Highlight first pagination item (if applicable)
-                                    document.querySelectorAll('.pagination-item').forEach(link => {
-                                        if (link.getAttribute('data-page') === '1' && !link.querySelector('i')) {
-                                            link.classList.add('active');
+
+
+                            function bindEditButtons() {
+                                const editButtons = document.querySelectorAll('.edit-button');
+
+                                editButtons.forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        document.getElementById('editItemID').value = this.dataset.id;
+                                        document.getElementById('editItemName').value = this.dataset.name;
+                                        document.getElementById('editItemBrand').value = this.dataset.brand;
+                                        document.getElementById('editItemQuantity').value = this.dataset.quantity;
+                                        document.getElementById('editItemPrice').value = this.dataset.price;
+                                        document.getElementById('editItemCategory').value = this.dataset.category;
+                                        document.getElementById('editItemStatus').value = this.dataset.status;
+
+                                        const imagePreview = document.getElementById('editItemImagePreview');
+                                        if (this.dataset.image) {
+                                            imagePreview.src = 'data:image/jpeg;base64,' + this.dataset.image;
+                                            imagePreview.style.display = 'block';
+                                        } else {
+                                            imagePreview.style.display = 'none';
                                         }
                                     });
-                                })
-                                .catch(err => console.error('Initial load error:', err));
+                                });
+                            }
 
-                            // Bind pagination events
+
+                            function refreshItemsTable() {
+                                fetch('load_items_table.php')
+                                    .then(res => res.text())
+                                    .then(html => {
+                                        document.getElementById('itemsTableBody').innerHTML = html;
+
+                                        bindEditButtons();
+                                    });
+                            }
+
+
                             function bindPaginationEvents() {
                                 const links = document.querySelectorAll('.pagination-item');
                                 links.forEach(link => {
@@ -558,24 +534,38 @@ if (!isset($_SESSION['userID'])) {
                                         e.preventDefault();
                                         const page = this.getAttribute('data-page');
 
-                                        fetch(`fetch_item_tables.php?page=${page}`)
+                                        fetch(`load_items_table.php?page=${page}`)
                                             .then(response => response.text())
                                             .then(html => {
-                                                document.getElementById('itemsTableBody').innerHTML = html;
+                                                const parser = new DOMParser();
+                                                const doc = parser.parseFromString(html, 'text/html');
 
-                                                // Update active state
-                                                document.querySelectorAll('.pagination-item').forEach(l => l.classList.remove('active'));
+                                                // Replace table rows
+                                                document.getElementById('itemsTableBody').innerHTML =
+                                                    doc.getElementById('itemsTableBody').innerHTML;
+
+                                                // Replace pagination
+                                                document.getElementById('pagination').innerHTML =
+                                                    doc.getElementById('pagination').innerHTML;
+
+                                                // Rebind events
+                                                bindEditButtons();
+                                                bindPaginationEvents();
+
                                                 document.querySelectorAll('.pagination-item').forEach(link => {
-                                                    if (link.getAttribute('data-page') === page && !link.querySelector('i')) {
+                                                    link.classList.remove('active');
+                                                    if (link.getAttribute('data-page') == page && !link.querySelector('i')) {
                                                         link.classList.add('active');
                                                     }
                                                 });
+
                                             })
                                             .catch(err => console.error('Pagination fetch error:', err));
                                     });
                                 });
                             }
 
+                            bindEditButtons();
                             bindPaginationEvents();
                         }
 
@@ -593,6 +583,7 @@ if (!isset($_SESSION['userID'])) {
         });
 
 
+
         function loadItemsByCategory(category) {
             if (!category) return;
 
@@ -608,16 +599,13 @@ if (!isset($_SESSION['userID'])) {
                         const option = document.createElement('option');
                         option.value = item.item_name;
                         option.textContent = item.item_name;
+                        option.dataset.quantity = item.quantity;
                         itemSelect.appendChild(option);
                     });
                 }
             };
             xhr.send();
         }
-
-
-
-
 
     </script>
 </body>

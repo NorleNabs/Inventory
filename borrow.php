@@ -174,6 +174,9 @@ $result = $conn->query($sql);
                                     <input type="number" class="form-control has-icon" id="quantity" name="quantity"
                                         placeholder="1" min="1" value="1" required>
                                 </div>
+                                <label class="form-label">Available Quantity: <span
+                                        id="availableQuantity">N/A</span></label>
+                                <span></span>
                             </div>
                         </div>
 

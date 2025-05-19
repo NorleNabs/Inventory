@@ -8,7 +8,6 @@ $offset = ($page - 1) * $itemsPerPage;
 $sql = "SELECT * FROM all_items LIMIT $itemsPerPage OFFSET $offset";
 $result = $conn->query($sql);
 
-// Get total items for pagination
 $totalItemsResult = $conn->query("SELECT COUNT(*) as count FROM all_items");
 $totalItems = $totalItemsResult->fetch_assoc()['count'];
 $totalPages = ceil($totalItems / $itemsPerPage);
@@ -16,7 +15,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 ?>
 
 <div class="container">
-  <div class="table-container">
+  <div class="table-container" id="itemsTableContainer">
     <table class="table inventory-table">
       <thead class="table-light">
         <tr>
@@ -27,7 +26,6 @@ $totalPages = ceil($totalItems / $itemsPerPage);
           <th>Price</th>
           <th>Status</th>
           <th>Category</th>
-
           <th>Actions</th>
         </tr>
       </thead>
@@ -104,8 +102,34 @@ $totalPages = ceil($totalItems / $itemsPerPage);
         <?php endif; ?>
       </tbody>
     </table>
+    <div class="table-footer mt-3">
+      <div class="table-info">
+        Showing <?php echo $page; ?> out of <?php echo $totalPages; ?> page<?php echo $totalPages > 1 ? 's' : ''; ?>
+      </div>
+      <div class="pagination" id="pagination">
+        <?php if ($page > 1): ?>
+          <a href="#" class="pagination-item" data-page="<?php echo $page - 1; ?>">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+          <a href="#" class="pagination-item <?php echo $i === $page ? 'active' : ''; ?>" data-page="<?php echo $i; ?>">
+            <?php echo $i; ?>
+          </a>
+        <?php endfor; ?>
+
+        <?php if ($page < $totalPages): ?>
+          <a href="#" class="pagination-item" data-page="<?php echo $page + 1; ?>">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        <?php endif; ?>
+      </div>
+    </div>
   </div>
 </div>
+
+
 
 <div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -120,7 +144,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 
           <div class="mb-3 text-center">
             <label class="form-label d-block">Current Image</label>
-            <img id="editItemImagePreview" src="#" alt="Item Image"
+            <img id="editItemImagePreview" src="#" alt="Item Image" class="d-block mx-auto"
               style="max-width: 100%; height: auto; display: none; border: 1px solid #ddd; padding: 5px;">
           </div>
 
@@ -175,30 +199,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 
 
 
-<div class="table-footer mt-3">
-  <div class="table-info">
-    Showing <?php echo $page; ?> out of <?php echo $totalPages; ?> page<?php echo $totalPages > 1 ? 's' : ''; ?>
-  </div>
-  <div class="pagination" id="pagination">
-    <?php if ($page > 1): ?>
-      <a href="#" class="pagination-item" data-page="<?php echo $page - 1; ?>">
-        <i class="fas fa-chevron-left"></i>
-      </a>
-    <?php endif; ?>
 
-    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-      <a href="#" class="pagination-item <?php echo $i === $page ? 'active' : ''; ?>" data-page="<?php echo $i; ?>">
-        <?php echo $i; ?>
-      </a>
-    <?php endfor; ?>
-
-    <?php if ($page < $totalPages): ?>
-      <a href="#" class="pagination-item" data-page="<?php echo $page + 1; ?>">
-        <i class="fas fa-chevron-right"></i>
-      </a>
-    <?php endif; ?>
-  </div>
-</div>
 
 
 <style>
