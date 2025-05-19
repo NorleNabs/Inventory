@@ -41,7 +41,7 @@ if (!isset($_SESSION['userID'])) {
                 </li>
 
                 <li class="nav-item">
-                    <a href="#" class="has-submenu" data-bs-toggle="collapse" data-bs-target="#inventorySubmenu">
+                    <a href="a" class="has-submenu" data-bs-toggle="collapse" data-bs-target="#inventorySubmenu">
                         <i class="bi bi-box fs-5"></i>
                         <span class="menu-text">Inventory</span>
                     </a>
@@ -113,7 +113,7 @@ if (!isset($_SESSION['userID'])) {
             <div class="sidebar-footer">
                 <a id="sidebarCollapse" class="btn btn-sm btn-outline-secondary d-flex align-items-center">
                     <i class="bi bi-arrow-left-right"></i>
-                    <span class="ms-2">Collapse</span>
+                    <span class="ms-2">Minimize</span>
                 </a>
             </div>
         </nav>
@@ -515,6 +515,69 @@ if (!isset($_SESSION['userID'])) {
                                 });
                             }
 
+                            function bindViewDetailsButtons() {
+                                document.querySelectorAll('.view-details-button').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const imageBase64 = this.dataset.image;
+                                        const content = `
+                                            <div class="item-image-wrapper">
+                                                <img src="data:image/jpeg;base64,${imageBase64}" alt="Item Image" class="item-image">
+                                            </div>
+                                            
+                                            <!-- Details grid -->
+                                            <div class="item-details-grid">
+                                                <div class="detail-card">
+                                                <div class="detail-label">Item ID</div>
+                                                <div class="detail-value">${this.dataset.id}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Name</div>
+                                                <div class="detail-value">${this.dataset.name}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Brand</div>
+                                                <div class="detail-value">${this.dataset.brand}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Category</div>
+                                                <div class="detail-value">${this.dataset.category}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Quantity</div>
+                                                <div class="detail-value">${this.dataset.quantity}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Price</div>
+                                                <div class="detail-value price">$${parseFloat(this.dataset.price).toFixed(2)}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Status</div>
+                                                <div class="detail-value">${this.dataset.status}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Date Added</div>
+                                                <div class="detail-value">${this.dataset.date}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card full-width">
+                                                <div class="detail-label">Description</div>
+                                                <div class="detail-value description-text">${this.dataset.description.replace(/\n/g, '<br>')}</div>
+                                                </div>
+                                            </div>
+                                        `;
+                                        document.getElementById('offcanvasContent').innerHTML = content;
+                                    });
+                                });
+                            }
+
+
 
                             function refreshItemsTable() {
                                 fetch('load_items_table.php')
@@ -548,8 +611,15 @@ if (!isset($_SESSION['userID'])) {
                                                 document.getElementById('pagination').innerHTML =
                                                     doc.getElementById('pagination').innerHTML;
 
+                                                // ✅ Replace table-info
+                                                const newInfo = doc.querySelector('.table-info');
+                                                const oldInfo = document.querySelector('.table-info');
+                                                if (newInfo && oldInfo) {
+                                                    oldInfo.innerHTML = newInfo.innerHTML;
+                                                }
                                                 // Rebind events
                                                 bindEditButtons();
+                                                bindViewDetailsButtons()
                                                 bindPaginationEvents();
 
                                                 document.querySelectorAll('.pagination-item').forEach(link => {
@@ -566,6 +636,7 @@ if (!isset($_SESSION['userID'])) {
                             }
 
                             bindEditButtons();
+                            bindViewDetailsButtons()
                             bindPaginationEvents();
                         }
 

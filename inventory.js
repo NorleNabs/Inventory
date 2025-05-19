@@ -210,7 +210,7 @@ document.getElementById('sidebarCollapse').addEventListener('click', function() 
 });
 
 
-// Toggle submenu
+
 const hasSubmenuLinks = document.querySelectorAll('.has-submenu');
 hasSubmenuLinks.forEach(function(link) {
     link.addEventListener('click', function(e) {

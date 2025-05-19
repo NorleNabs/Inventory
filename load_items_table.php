@@ -14,23 +14,6 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 
 ?>
 
-
-
-<?php
-require 'server.php';
-
-$itemsPerPage = 5;
-$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-$offset = ($page - 1) * $itemsPerPage;
-
-$sql = "SELECT * FROM all_items LIMIT $itemsPerPage OFFSET $offset";
-$result = $conn->query($sql);
-
-$totalItemsResult = $conn->query("SELECT COUNT(*) as count FROM all_items");
-$totalItems = $totalItemsResult->fetch_assoc()['count'];
-$totalPages = ceil($totalItems / $itemsPerPage);
-?>
-
 <table class="table inventory-table">
     <thead class="table-light">
         <tr>
@@ -57,7 +40,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                     <td>
                         <?php if (!empty($row['item_img'])): ?>
                             <img src="data:image/jpeg;base64,<?= base64_encode($row['item_img']) ?>" alt="Item Image"
-                                style="width: 100px; height: 80px; object-fit: cover; border-radius: 5px;">
+                                style="width: 100px; height: 70px; object-fit: cover; border-radius: 5px;">
                         <?php else: ?>
                             No Image
                         <?php endif; ?>
@@ -93,24 +76,27 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                                 <i class="fas fa-edit"></i>
                             </button>
 
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle action-icon" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false" title="Other Details">
-                                </button>
-                                <ul class="dropdown-menu p-3" style="min-width: 250px;">
-                                    <li><strong>Item ID:</strong> <?= htmlspecialchars($row['itemID']); ?></li>
-                                    <li><strong>Date Added:</strong> <?= date('M d, Y', strtotime($row['date'])); ?></li>
-                                    <li><strong>Description:</strong><br><?= nl2br(htmlspecialchars($row['description'])); ?>
-                                    </li>
-                                </ul>
-                            </div>
+                            <button class="btn  view-details-button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+                                data-id="<?= htmlspecialchars($row['itemID']) ?>"
+                                data-name="<?= htmlspecialchars($row['item_name']) ?>"
+                                data-brand="<?= htmlspecialchars($row['item_brand']) ?>"
+                                data-category="<?= htmlspecialchars($row['category']) ?>"
+                                data-quantity="<?= htmlspecialchars($row['quantity']) ?>"
+                                data-price="<?= htmlspecialchars($row['price']) ?>"
+                                data-status="<?= htmlspecialchars($row['status']) ?>"
+                                data-date="<?= date('M d, Y', strtotime($row['date'])) ?>"
+                                data-description="<?= htmlspecialchars($row['description']) ?>"
+                                data-image="<?= base64_encode($row['item_img']) ?>">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
             <?php endwhile; ?>
         <?php else: ?>
             <tr>
-                <td colspan="8" class="text-center">No items found.</td>
+                <td colspan=" 8" class="text-center">No items found.
+                </td>
             </tr>
         <?php endif; ?>
     </tbody>
@@ -118,8 +104,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 
 <div class="table-footer mt-3">
     <div class="table-info">
-        Showing page <?php echo $page; ?> out of <?php echo $totalPages; ?>
-        page<?php echo $totalPages > 1 ? 's' : ''; ?>
+        Showing <?php echo $page; ?> out of <?php echo $totalPages; ?> page<?php echo $totalPages > 1 ? 's' : ''; ?>
     </div>
     <div class="pagination" id="pagination">
         <?php if ($page > 1): ?>

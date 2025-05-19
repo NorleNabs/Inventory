@@ -16,7 +16,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 
 <div class="container">
   <div class="table-container" id="itemsTableContainer">
-    <table class="table inventory-table">
+    <table class="table inventory-table shadow-lg">
       <thead class="table-light">
         <tr>
           <th>Item</th>
@@ -42,7 +42,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
               <td>
                 <?php if (!empty($row['item_img'])): ?>
                   <img src="data:image/jpeg;base64,<?= base64_encode($row['item_img']) ?>" alt="Item Image"
-                    style="width: 100px; height: 80px; object-fit: cover; border-radius: 5px;">
+                    style="width: 100px; height: 70px; object-fit: cover; border-radius: 5px;">
                 <?php else: ?>
                   No Image
                 <?php endif; ?>
@@ -80,17 +80,19 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                     <i class="fas fa-edit"></i>
                   </button>
 
-                  <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle action-icon" type="button" data-bs-toggle="dropdown"
-                      aria-expanded="false" title="Other Details">
-                    </button>
-                    <ul class="dropdown-menu p-3" style="min-width: 250px;">
-                      <li><strong>Item ID:</strong> <?= htmlspecialchars($row['itemID']); ?></li>
-                      <li><strong>Date Added:</strong> <?= date('M d, Y', strtotime($row['date'])); ?></li>
-                      <li><strong>Description:</strong><br><?= nl2br(htmlspecialchars($row['description'])); ?></li>
-                    </ul>
-                  </div>
-
+                  <button class="btn view-details-button action-icon" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasRight" data-id="<?= htmlspecialchars($row['itemID']) ?>"
+                    data-name="<?= htmlspecialchars($row['item_name']) ?>"
+                    data-brand="<?= htmlspecialchars($row['item_brand']) ?>"
+                    data-category="<?= htmlspecialchars($row['category']) ?>"
+                    data-quantity="<?= htmlspecialchars($row['quantity']) ?>"
+                    data-price="<?= htmlspecialchars($row['price']) ?>"
+                    data-status="<?= htmlspecialchars($row['status']) ?>"
+                    data-date="<?= date('M d, Y', strtotime($row['date'])) ?>"
+                    data-description="<?= htmlspecialchars($row['description']) ?>"
+                    data-image="<?= base64_encode($row['item_img']) ?>">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -197,17 +199,40 @@ $totalPages = ceil($totalItems / $itemsPerPage);
   </div>
 </div>
 
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasBottomLabel">Item Details</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body small" id="offcanvasContent">
+
+  </div>
+</div>
 
 
 
 
 
 <style>
+  :root {
+    --primary-color: #4361ee;
+    --bg-light: #f8f9fa;
+    --bg-light-hover: #f1f3f9;
+    --text-dark: #1a1f36;
+    --text-muted: #6b7280;
+    --border-color: rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+  }
+
   .inventory-table {
     background-color: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4 12px rgba(0, 0, 0, 0.01);
   }
 
   .inventory-table th,
@@ -328,6 +353,145 @@ $totalPages = ceil($totalItems / $itemsPerPage);
       font-weight: 600;
       color: #495057;
     }
+  }
+
+  .offcanvas {
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+    border: none;
+    max-width: 450px;
+  }
+
+  .offcanvas-header {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .offcanvas-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .offcanvas-title:before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 3px;
+  }
+
+  .btn-close {
+    background-color: var(--bg-light);
+    opacity: 1;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+  }
+
+  .btn-close:hover {
+    background-color: var(--bg-light-hover);
+    transform: rotate(90deg);
+  }
+
+  .offcanvas-body {
+    padding: 1.5rem;
+  }
+
+  /* Image container styling */
+  .item-image-wrapper {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1.75rem;
+  }
+
+  .item-image {
+    max-width: 85%;
+    height: auto;
+    max-height: 240px;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s ease;
+  }
+
+  .item-image:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Item details grid */
+  .item-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
+  }
+
+  /* Field styling */
+  .detail-card {
+    background-color: var(--bg-light);
+    border-radius: var(--radius-sm);
+    padding: 0.875rem;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .detail-card:hover {
+    background-color: var(--bg-light-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .detail-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .detail-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .detail-value {
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    word-break: break-word;
+  }
+
+  .detail-value.price {
+    color: var(--primary-color);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .description-text {
+    margin-top: 0.5rem;
+    line-height: 1.6;
+  }
+
+  /* Demo button (for preview only) */
+  .demo-trigger {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .demo-trigger:hover {
+    background-color: #3651c9;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
 </style>
 

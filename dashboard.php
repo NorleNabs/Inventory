@@ -17,7 +17,7 @@ if ($sumResult && $row = $sumResult->fetch_assoc()) {
 }
 
 
-$lowStockSql = "SELECT * FROM all_items WHERE quantity < 2 ORDER BY quantity ASC";
+$lowStockSql = "SELECT * FROM all_items WHERE quantity <= 2 ORDER BY quantity ASC";
 $lowStockResult = $conn->query($lowStockSql);
 
 $lowStockItems = [];
@@ -47,7 +47,7 @@ $requestResult = $conn->query($requestSql);
 
 <div class="row">
     <div class="col-md-3 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-1 shadow-sm">
             <div class="card-body d-flex align-items-center">
                 <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
                     <i class="bi bi-box text-primary fs-4"></i>
@@ -61,7 +61,7 @@ $requestResult = $conn->query($requestSql);
     </div>
 
     <div class="col-md-3 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-1 shadow-sm">
             <div class="card-body d-flex align-items-center">
                 <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
                     <i class="bi bi-arrow-down-up text-success fs-4"></i>
@@ -75,7 +75,7 @@ $requestResult = $conn->query($requestSql);
     </div>
 
     <div class="col-md-3 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-1 shadow-sm">
             <div class="card-body d-flex align-items-center">
                 <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
                     <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
@@ -89,7 +89,7 @@ $requestResult = $conn->query($requestSql);
     </div>
 
     <div class="col-md-3 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-1 shadow-sm">
             <div class="card-body d-flex align-items-center">
                 <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
                     <i class="bi bi-tags text-danger fs-4"></i>
@@ -105,7 +105,7 @@ $requestResult = $conn->query($requestSql);
 
 <div class="row">
     <div class="col-lg-8 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-1 shadow-sm">
             <div class="card-header bg-white border-0">
                 <h5 class="card-title mb-0">Pending Request</h5>
             </div>
@@ -141,7 +141,7 @@ $requestResult = $conn->query($requestSql);
     </div>
 
     <div class="col-lg-4 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-1 shadow-sm">
             <div class="card-header bg-white border-0">
                 <h5 class="card-title mb-0">Low Stock Items</h5>
             </div>
@@ -149,16 +149,29 @@ $requestResult = $conn->query($requestSql);
                 <?php if ($lowStockCount > 0): ?>
                     <ul class="list-group list-group-flush">
                         <?php foreach ($lowStockItems as $item): ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center"
-                                id="<?php echo htmlspecialchars($item['itemID']); ?>">
-                                <div>
-                                    <div class="fw-bold"><?php echo htmlspecialchars($item['item_name']); ?></div>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <!-- Item Name (left) -->
+                                    <div class="flex-grow-1" style="min-width: 100px;">
+                                        <strong><?php echo htmlspecialchars($item['item_name']); ?></strong>
+                                    </div>
+
+                                    <!-- Category (middle) -->
+                                    <div class="text-muted text-center" style="width: 150px;">
+                                        <?php echo htmlspecialchars($item['category']); ?>
+                                    </div>
+
+                                    <!-- Quantity (right) -->
+                                    <div style="width: 100px;" class="text-end">
+                                        <span class="badge bg-danger rounded-pill">
+                                            <?php echo htmlspecialchars($item['quantity']); ?> left
+                                        </span>
+                                    </div>
                                 </div>
-                                <span class="badge bg-danger rounded-pill"><?php echo htmlspecialchars($item['quantity']); ?>
-                                    left</span>
                             </li>
                         <?php endforeach; ?>
                     </ul>
+
                 <?php else: ?>
                     <div class="p-3 text-muted">All items are in stock.</div>
                 <?php endif; ?>
