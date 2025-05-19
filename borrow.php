@@ -27,11 +27,11 @@ $result = $conn->query($sql);
             </div>
             <div class="step">
                 <div class="circle">2</div>
-                <div class="label">Item Details</div>
+                <div class="label">Borrowing Period</div>
             </div>
             <div class="step">
                 <div class="circle">3</div>
-                <div class="label">Borrowing Period</div>
+                <div class="label">Item Details</div>
             </div>
             <div class="step">
                 <div class="circle">4</div>
@@ -80,13 +80,13 @@ $result = $conn->query($sql);
                             <div class="input-with-icon">
                                 <i class="fas fa-phone input-icon"></i>
                                 <input type="tel" class="form-control has-icon" id="phone" name="phone"
-                                    placeholder="(123) 456-7890">
+                                    placeholder="(123) 456-7890" required>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="department" class="form-label">Department</label>
-                            <select class="form-select" id="department">
+                            <select class="form-select" id="department" required>
                                 <option selected disabled>Select department</option>
                                 <option value="admin">Administration</option>
                                 <option value="it">IT</option>
@@ -154,7 +154,7 @@ $result = $conn->query($sql);
                         <div class="row">
                             <div class="form-group">
                                 <label for="category" class="form-label">Category</label>
-                                <select class="form-select" id="category" name="category"
+                                <select class="form-select" id="category" name="category" required
                                     onchange="loadItemsByCategory(this.value)">
                                     <option selected disabled>Select a category</option>
                                     <?php
@@ -181,7 +181,7 @@ $result = $conn->query($sql);
                             <div class="form-group">
                                 <label for="itemName" class="form-label">Item Name<span
                                         class="required">*</span></label>
-                                <select class="form-select" id="itemName" name="itemName">
+                                <select class="form-select" id="itemName" name="itemName" required>
                                     <option selected disabled>Select Item</option>
                                 </select>
                             </div>
@@ -206,7 +206,7 @@ $result = $conn->query($sql);
 
                     <div class="form-group">
                         <label for="purpose" class="form-label">Purpose of Borrowing</label>
-                        <select class="form-select" id="purpose" name="purpose">
+                        <select class="form-select" id="purpose" name="purpose" required>
                             <option selected disabled>Select purpose</option>
                             <option value="personal">Personal Use</option>
                             <option value="project">Project Work</option>
@@ -225,6 +225,20 @@ $result = $conn->query($sql);
                 </div>
             </div>
 
+            <div class="carousel-step">
+                <div class="form-panel text-center">
+                    <div class="panel-icon mb-3">
+                        <i class="fas fa-check-circle fa-3x text-success"></i>
+                    </div>
+                    <h3 class="panel-title">Request Submitted!</h3>
+                    <p class="mt-3">Your borrow request has been successfully submitted. You will receive a confirmation
+                        shortly.</p>
+                    <a href="#" class="btn btn-primary mt-3" onclick="location.reload()">Return to Dashboard</a>
+                </div>
+            </div>
+
+
+
             <!-- Form Footer -->
             <div class="form-footer">
                 <div class="form-check">
@@ -235,11 +249,11 @@ $result = $conn->query($sql);
                 </div>
 
                 <div>
-                    <button type="reset" class="btn btn-outline borrow-btn me-2">
-                        <i class="fas fa-redo me-1"></i>Reset
+                    <button type="reset" class="btn btn-outline borrow-btn me-2" id="prevBtn">
+                        Back
                     </button>
-                    <button type="submit" class="btn btn-primary borrow-btn">
-                        <i class="fas fa-paper-plane me-1"></i>Submit Request
+                    <button type="submit" class="btn btn-primary borrow-btn" id="nextBtn">
+                        Next
                     </button>
                 </div>
             </div>
@@ -254,7 +268,7 @@ $result = $conn->query($sql);
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Item added successfully!
+                    Request Submited successfully
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success borrow-btn" data-bs-dismiss="modal">OK</button>

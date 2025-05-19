@@ -53,15 +53,15 @@ if (!isset($_SESSION['userID'])) {
                             </a>
                         </li>
                         <li>
-                            <a href="add_item.php" class="load-content">
-                                <i class="bi bi-plus-circle fs-5 sub-icon"></i>
-                                <span class="submenu-text">Add New Item</span>
-                            </a>
-                        </li>
-                        <li>
                             <a href="borrow.php" class="load-content">
                                 <i class="bi bi-person-lines-fill fs-5 sub-icon"></i>
                                 <span class="submenu-text">Borrow Item</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="add_item.php" class="load-content">
+                                <i class="bi bi-plus-circle fs-5 sub-icon"></i>
+                                <span class="submenu-text">Add New Item</span>
                             </a>
                         </li>
                     </ul>
@@ -205,8 +205,11 @@ if (!isset($_SESSION['userID'])) {
                     const page = this.getAttribute('href');
                     window.location.hash = page;
                     loadPage(page);
+
                 });
             });
+
+
 
 
             function loadPage(url) {
@@ -219,6 +222,8 @@ if (!isset($_SESSION['userID'])) {
                         if (url === 'report.html') {
                             initCharts();
                         }
+
+
 
 
                         const addItemform = document.getElementById('addItemForm');
@@ -410,18 +415,178 @@ if (!isset($_SESSION['userID'])) {
                         });
 
 
+
                         const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
                         const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
 
 
+                        if (url === 'borrow.php') {
+                            const steps = document.querySelectorAll('.carousel-step');
+                            const stepIndicators = document.querySelectorAll('.stepper .step');
+                            const prevBtn = document.getElementById('prevBtn');
+                            const nextBtn = document.getElementById('nextBtn');
+                            const formFooter = document.querySelector('.form-footer');
+                            let currentStep = 0;
+
+                            prevBtn.addEventListener('click', () => {
+                                if (currentStep > 0) {
+                                    currentStep--;
+                                    showStep(currentStep);
+                                }
+                            });
+
+                            nextBtn.addEventListener('click', () => {
+                                if (currentStep < steps.length - 1) {
+                                    currentStep++;
+                                    showStep(currentStep);
+                                } else {
+                                    if (validateCurrentStep()) {
+                                        document.getElementById('borrowingForm').submit();
+                                    } else {
+                                        alert('Please fill out all required fields before submitting.');
+                                    }
+                                }
+                            });
 
 
+                            function updateStepper(index) {
+                                stepIndicators.forEach((step, i) => {
+                                    step.classList.remove('active', 'completed');
+                                    if (i < index) step.classList.add('completed');
+                                    if (i === index) step.classList.add('active');
+                                });
+                            }
+
+                            function showStep(index) {
+                                steps.forEach((step, i) => {
+                                    step.classList.toggle('active', i === index);
+                                });
+                                updateStepper(index);
+                                prevBtn.disabled = index === 0;
+                                formFooter.style.display = currentStep === steps.length - 1 ? 'none' : 'flex';
+                                nextBtn.textContent = index === steps.length - 1 ? 'Submit Request' : 'Next';
+
+                                updateNextButtonState();
+
+
+                            }
+
+                            function validateCurrentStep() {
+                                const currentStepEl = steps[currentStep];
+                                const inputs = currentStepEl.querySelectorAll('input, select, textarea');
+
+                                for (const input of inputs) {
+                                    if (input.hasAttribute('required')) {
+                                        if (input.tagName.toLowerCase() === 'select') {
+                                            const selectedOption = input.options[input.selectedIndex];
+                                            if (!selectedOption || selectedOption.disabled) {
+                                                return false;
+                                            }
+                                        } else if (input.value.trim() === '') {
+                                            return false;
+                                        }
+                                    }
+                                }
+                                return true;
+                            }
+
+                            document.getElementById('agreeTerms').addEventListener('change', updateNextButtonState);
+
+                            function updateNextButtonState() {
+                                const currentStepElement = steps[currentStep];
+                                const inputs = currentStepElement.querySelectorAll('input, select, textarea');
+
+                                let allFilled = true;
+
+                                inputs.forEach(input => {
+                                    if (
+                                        (input.type === 'checkbox' && input.required && !input.checked) ||
+                                        (input.type !== 'checkbox' && (!input.value || input.value === 'Select department' || input.value === 'Select Item' || input.value === 'Select purpose'))
+                                    ) {
+                                        allFilled = false;
+                                    }
+                                });
+
+                                // ✅ Require agreeTerms to be checked globally, even on step 0
+                                const agreeTerms = document.getElementById('agreeTerms');
+                                if (agreeTerms && !agreeTerms.checked) {
+                                    allFilled = false;
+                                }
+
+                                nextBtn.disabled = !allFilled;
+                            }
+
+
+                            function attachStepValidationListeners() {
+                                steps.forEach(step => {
+                                    const fields = step.querySelectorAll('input, select, textarea');
+                                    fields.forEach(field => {
+                                        field.addEventListener('input', updateNextButtonState);
+                                        field.addEventListener('change', updateNextButtonState);
+                                        field.addEventListener('keyup', updateNextButtonState);
+                                    });
+                                });
+
+
+                            }
+
+                            attachStepValidationListeners();
+                            showStep(currentStep);
+                        }
+
+                        if (url === 'view_all_item.php') {
+                            // Load page 1 by default
+                            fetch('fetch_item_tables.php?page=1')
+                                .then(response => response.text())
+                                .then(html => {
+                                    document.getElementById('itemsTableBody').innerHTML = html;
+
+                                    // Highlight first pagination item (if applicable)
+                                    document.querySelectorAll('.pagination-item').forEach(link => {
+                                        if (link.getAttribute('data-page') === '1' && !link.querySelector('i')) {
+                                            link.classList.add('active');
+                                        }
+                                    });
+                                })
+                                .catch(err => console.error('Initial load error:', err));
+
+                            // Bind pagination events
+                            function bindPaginationEvents() {
+                                const links = document.querySelectorAll('.pagination-item');
+                                links.forEach(link => {
+                                    link.addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        const page = this.getAttribute('data-page');
+
+                                        fetch(`fetch_item_tables.php?page=${page}`)
+                                            .then(response => response.text())
+                                            .then(html => {
+                                                document.getElementById('itemsTableBody').innerHTML = html;
+
+                                                // Update active state
+                                                document.querySelectorAll('.pagination-item').forEach(l => l.classList.remove('active'));
+                                                document.querySelectorAll('.pagination-item').forEach(link => {
+                                                    if (link.getAttribute('data-page') === page && !link.querySelector('i')) {
+                                                        link.classList.add('active');
+                                                    }
+                                                });
+                                            })
+                                            .catch(err => console.error('Pagination fetch error:', err));
+                                    });
+                                });
+                            }
+
+                            bindPaginationEvents();
+                        }
 
                     })
+
                     .catch(() => {
                         subcontent.innerHTML = '<p>Error loading content.</p>';
                     });
             }
+
+
 
 
 

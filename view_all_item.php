@@ -1,7 +1,7 @@
 <?php
 require 'server.php';
 
-$itemsPerPage = 10;
+$itemsPerPage = 5;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $itemsPerPage;
 
@@ -44,11 +44,12 @@ $totalPages = ceil($totalItems / $itemsPerPage);
               <td>
                 <?php if (!empty($row['item_img'])): ?>
                   <img src="data:image/jpeg;base64,<?= base64_encode($row['item_img']) ?>" alt="Item Image"
-                    style="width: 100px; height: auto;">
+                    style="width: 100px; height: 80px; object-fit: cover; border-radius: 5px;">
                 <?php else: ?>
                   No Image
                 <?php endif; ?>
               </td>
+
 
               <td data-label="Quantity"><?php echo htmlspecialchars($row['quantity']); ?></td>
               <td data-label="Price"><span class="price">$<?php echo number_format($row['price'], 2); ?></span></td>
@@ -81,14 +82,17 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                     <i class="fas fa-edit"></i>
                   </button>
 
-                  <button type="button" class="btn action-icon" title="Other Details" data-bs-container="body"
-                    data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true" data-bs-content="
-                    <div><strong>Item ID:</strong> <?php echo htmlspecialchars($row['itemID']); ?></div>
-                    <div><strong>Date Added:</strong> <?php echo date('M d, Y', strtotime($row['date'])); ?></div>
-                    <div><strong>Description:</strong> <?php echo htmlspecialchars($row['description']); ?></div>     
-                          ">
-                    <i class="bi bi-chevron-down"></i>
-                  </button>
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle action-icon" type="button" data-bs-toggle="dropdown"
+                      aria-expanded="false" title="Other Details">
+                    </button>
+                    <ul class="dropdown-menu p-3" style="min-width: 250px;">
+                      <li><strong>Item ID:</strong> <?= htmlspecialchars($row['itemID']); ?></li>
+                      <li><strong>Date Added:</strong> <?= date('M d, Y', strtotime($row['date'])); ?></li>
+                      <li><strong>Description:</strong><br><?= nl2br(htmlspecialchars($row['description'])); ?></li>
+                    </ul>
+                  </div>
+
                 </div>
               </td>
             </tr>
@@ -173,27 +177,29 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 
 <div class="table-footer mt-3">
   <div class="table-info">
-    Showing <?php echo min($itemsPerPage, $totalItems - $offset); ?> of <?php echo $totalItems; ?> items
+    Showing <?php echo $page; ?> out of <?php echo $totalPages; ?> page<?php echo $totalPages > 1 ? 's' : ''; ?>
   </div>
-
-  <div class="pagination">
+  <div class="pagination" id="pagination">
     <?php if ($page > 1): ?>
-      <a class="pagination-item" href="?page=<?php echo $page - 1; ?>"><i class="fas fa-chevron-left"></i></a>
+      <a href="#" class="pagination-item" data-page="<?php echo $page - 1; ?>">
+        <i class="fas fa-chevron-left"></i>
+      </a>
     <?php endif; ?>
 
     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-      <a class="pagination-item <?php echo $i === $page ? 'active' : ''; ?>" href="?page=<?php echo $i; ?>">
+      <a href="#" class="pagination-item <?php echo $i === $page ? 'active' : ''; ?>" data-page="<?php echo $i; ?>">
         <?php echo $i; ?>
       </a>
     <?php endfor; ?>
 
     <?php if ($page < $totalPages): ?>
-      <a class="pagination-item" href="?page=<?php echo $page + 1; ?>"><i class="fas fa-chevron-right"></i></a>
+      <a href="#" class="pagination-item" data-page="<?php echo $page + 1; ?>">
+        <i class="fas fa-chevron-right"></i>
+      </a>
     <?php endif; ?>
   </div>
+</div>
 
-</div>
-</div>
 
 <style>
   .inventory-table {

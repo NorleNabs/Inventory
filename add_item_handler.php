@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['description'];
     $date = date('Y-m-d');
 
-    // Check and read uploaded image
+
     if (isset($_FILES['item_image']) && $_FILES['item_image']['error'] == 0) {
         $imageData = file_get_contents($_FILES['item_image']['tmp_name']);
     } else {
@@ -20,12 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Prepare SQL with image
+
     $stmt = $conn->prepare("INSERT INTO all_items (item_name, item_brand, quantity, price, status, category, description, date, item_img) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssisssssb", $item_name, $item_brand, $quantity, $price, $status, $category, $description, $date, $imageData);
 
-    // To use a BLOB, bind as 'b' and send the data with send_long_data()
-    $stmt->send_long_data(8, $imageData); // 8 is the index of the item_image parameter
+
+    $stmt->send_long_data(8, $imageData);
 
     if ($stmt->execute()) {
         echo json_encode(['success' => true]);
