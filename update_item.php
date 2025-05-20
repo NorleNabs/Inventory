@@ -3,12 +3,12 @@ header('Content-Type: application/json');
 require 'server.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $itemID = $_POST['itemID'];
+    $itemID = intval($_POST['itemID']);
     $itemName = $_POST['item_name'];
     $brand = $_POST['item_brand'];
-    $quantity = $_POST['quantity'];
-    $price = $_POST['price'];
-    $category = $_POST['category'];
+    $quantity = intval($_POST['quantity']);
+    $price = floatval($_POST['price']);
+    $category_id = intval($_POST['category']);
     $status = $_POST['status'];
 
     $hasImage = isset($_FILES['item_image']) && $_FILES['item_image']['error'] === 0;
@@ -21,12 +21,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $imageData = file_get_contents($_FILES['item_image']['tmp_name']);
 
-        $stmt = $conn->prepare("UPDATE all_items SET item_name=?, item_brand=?, quantity=?, price=?, category=?, status=?, item_img=? WHERE itemID=?");
-        $stmt->bind_param("ssidsssi", $itemName, $brand, $quantity, $price, $category, $status, $imageData, $itemID);
+        $stmt = $conn->prepare("
+            UPDATE all_items 
+            SET item_name = ?, item_brand = ?, quantity = ?, price = ?, category_id = ?, status = ?, item_img = ? 
+            WHERE itemID = ?
+        ");
+        $stmt->bind_param("ssiddsbi", $itemName, $brand, $quantity, $price, $category_id, $status, $null, $itemID);
         $stmt->send_long_data(6, $imageData);
     } else {
-        $stmt = $conn->prepare("UPDATE all_items SET item_name=?, item_brand=?, quantity=?, price=?, category=?, status=? WHERE itemID=?");
-        $stmt->bind_param("ssidssi", $itemName, $brand, $quantity, $price, $category, $status, $itemID);
+        $stmt = $conn->prepare("
+            UPDATE all_items 
+            SET item_name = ?, item_brand = ?, quantity = ?, price = ?, category_id = ?, status = ? 
+            WHERE itemID = ?
+        ");
+        $stmt->bind_param("ssiddsi", $itemName, $brand, $quantity, $price, $category_id, $status, $itemID);
     }
 
     if ($stmt->execute()) {
@@ -38,3 +46,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     $conn->close();
 }
+?>

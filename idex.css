@@ -137,6 +137,7 @@ li a .sub-icon {
     margin-left: var(--sidebar-width);
     transition: all var(--transition-speed) ease;
     padding: 20px;
+    
 }
 
 #content.expanded {
@@ -147,6 +148,14 @@ li a .sub-icon {
 .nav-item {
     position: relative;
 }
+
+.navbar{
+  border-width: 1px;
+  border-style: solid;
+  border-color: #dee2e6;
+}
+
+
 
 
 
@@ -206,127 +215,264 @@ li a .sub-icon {
     margin-bottom: 20px;
 }
 
-.inventory-table {
-    background-color: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+
+
+.inventory-table th,
+.inventory-table td {
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+.item-id {
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.item-name {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  border-radius: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.status-badge-in-stock {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.status-badge-low-stock {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+
+.status-badge-out-stock {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.category-pill {
+  padding: 0.35rem 0.75rem;
+  background-color: #e2e3e5;
+  color: #495057;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.price {
+  font-weight: 500;
+  color: #198754;
+}
+
+.action-icon {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.action-icon:hover {
+  color: #0d6efd;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pagination-item {
+  border: none;
+  background-color: #e9ecef;
+  color: #212529;
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.pagination-item.active,
+.pagination-item:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .inventory-table thead {
+    display: none;
   }
 
-  .inventory-table th, .inventory-table td {
-    vertical-align: middle;
-    padding: 0.75rem;
+  .inventory-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 1rem;
   }
 
-  .item-id {
-    font-weight: 600;
-    color: #0d6efd;
-  }
-
-  .item-name {
-    color: #6c757d;
-    font-size: 0.9rem;
-  }
-
-  .status-badge {
-    display: inline-block;
-    padding: 0.35rem 0.65rem;
-    font-size: 0.75rem;
-    border-radius: 20px;
-    font-weight: 600;
-    text-align: center;
-  }
-
-  .status-badge-in-stock {
-    background-color: #d1e7dd;
-    color: #0f5132;
-  }
-
-  .status-badge-low-stock {
-    background-color: #fff3cd;
-    color: #664d03;
-  }
-
-  .status-badge-out-stock {
-    background-color: #f8d7da;
-    color: #842029;
-  }
-
-  .category-pill {
-    padding: 0.35rem 0.75rem;
-    background-color: #e2e3e5;
-    color: #495057;
-    border-radius: 20px;
-    font-size: 0.8rem;
-  }
-
-  .price {
-    font-weight: 500;
-    color: #198754;
-  }
-
-  .action-icon {
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: #6c757d;
-  }
-
-  .action-icon:hover {
-    color: #0d6efd;
-  }
-
-  .table-footer {
+  .inventory-table td {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    flex-wrap: wrap;
+    padding: 0.5rem 0;
   }
 
-  .pagination {
-    display: flex;
-    gap: 0.5rem;
+  .inventory-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #495057;
   }
+}
 
-  .pagination-item {
-    border: none;
-    background-color: #e9ecef;
-    color: #212529;
-    padding: 0.5rem 0.75rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.875rem;
-  }
+.offcanvas {
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+  border: none;
+  max-width: 450px;
+}
 
-  .pagination-item.active, .pagination-item:hover {
-    background-color: #0d6efd;
-    color: white;
-  }
+.offcanvas-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.25rem 1.5rem;
+}
 
-  @media (max-width: 768px) {
-    .inventory-table thead {
-      display: none;
-    }
+.offcanvas-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .inventory-table tbody tr {
-      display: block;
-      margin-bottom: 1rem;
-      background: white;
-      border: 1px solid #dee2e6;
-      border-radius: 5px;
-      padding: 1rem;
-    }
+.offcanvas-title:before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 20px;
+  background: var(--primary-color);
+  border-radius: 3px;
+}
 
-    .inventory-table td {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-    }
+.btn-close {
+  background-color: var(--bg-light);
+  opacity: 1;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
 
-    .inventory-table td::before {
-      content: attr(data-label);
-      font-weight: 600;
-      color: #495057;
-    }
-  }
+.btn-close:hover {
+  background-color: var(--bg-light-hover);
+  transform: rotate(90deg);
+}
+
+.offcanvas-body {
+  padding: 1.5rem;
+}
+
+/* Image container styling */
+.item-image-wrapper {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.item-image {
+  max-width: 85%;
+  height: auto;
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease;
+}
+
+.item-image:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Item details grid */
+.item-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.875rem;
+}
+
+/* Field styling */
+.detail-card {
+  background-color: var(--bg-light);
+  border-radius: var(--radius-sm);
+  padding: 0.875rem;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.detail-card:hover {
+  background-color: var(--bg-light-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.detail-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  word-break: break-word;
+}
+
+.detail-value.price {
+  color: var(--primary-color);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.description-text {
+  margin-top: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Demo button (for preview only) */
+.demo-trigger {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-trigger:hover {
+  background-color: #3651c9;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+

@@ -1,11 +1,19 @@
 <?php
 require 'server.php';
 
-// Fetch unique categories
-$sql = "SELECT DISTINCT category FROM all_items ORDER BY category ASC";
+// Fetch unique category names from the category table
+$sql = "
+    SELECT DISTINCT c.category_name
+    FROM all_items ai
+    LEFT JOIN category c ON ai.category_id = c.category_id
+    WHERE c.category_name IS NOT NULL
+    ORDER BY c.category_name ASC
+";
+
 $result = $conn->query($sql);
 ?>
 
+<link rel="stylesheet" href="subcontent.css">
 
 <div class="main-container">
     <div class="form-header">
@@ -159,7 +167,7 @@ $result = $conn->query($sql);
                                     <option selected disabled>Select a category</option>
                                     <?php
                                     while ($row = $result->fetch_assoc()) {
-                                        $cat = htmlspecialchars($row['category']);
+                                        $cat = htmlspecialchars($row['category_name']);
                                         echo "<option value=\"$cat\">$cat</option>";
                                     }
                                     ?>
@@ -174,8 +182,8 @@ $result = $conn->query($sql);
                                     <input type="number" class="form-control has-icon" id="quantity" name="quantity"
                                         placeholder="1" min="1" value="1" required>
                                 </div>
-                                <label class="form-label">Available Quantity: <span
-                                        id="availableQuantity">N/A</span></label>
+                                <label class="form-label" style="font-size: 12px;">Available Quantity: <span
+                                        id="availableQuantity"></span></label>
                                 <span></span>
                             </div>
                         </div>
@@ -280,332 +288,3 @@ $result = $conn->query($sql);
         </div>
     </div>
 </div>
-
-<style>
-    :root {
-        --primary-color: #4361ee;
-        --secondary-color: #f8faff;
-        --accent-color: #3a0ca3;
-        --text-color: #2b2d42;
-        --light-gray: #e9ecef;
-        --border-color: #dee2e6;
-    }
-
-    .main-container {
-        width: 100%;
-        max-width: 1200px;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
-        overflow: hidden;
-        margin: 0 auto;
-    }
-
-    .form-header {
-        background-color: var(--primary-color);
-        color: white;
-        padding: 20px 30px;
-        display: flex;
-        align-items: center;
-    }
-
-    .form-logo {
-        width: 48px;
-        height: 48px;
-        background-color: white;
-        color: var(--primary-color);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-title {
-        margin: 0;
-        font-weight: 600;
-    }
-
-    .form-subtitle {
-        margin: 5px 0 0;
-        opacity: 0.9;
-        font-size: 0.95rem;
-    }
-
-    .form-content {
-        display: flex;
-        padding: 30px;
-        gap: 30px;
-    }
-
-    .form-column {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-    }
-
-    .form-panel {
-        background-color: var(--secondary-color);
-        border-radius: 8px;
-        padding: 20px;
-        border: 1px solid var(--border-color);
-    }
-
-    .panel-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .panel-icon {
-        color: white;
-        background-color: var(--primary-color);
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 10px;
-        font-size: 14px;
-    }
-
-    .panel-title {
-        margin: 0;
-        font-weight: 500;
-        font-size: 1.1rem;
-        color: var(--accent-color);
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .form-label {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--text-color);
-        margin-bottom: 6px;
-        display: block;
-    }
-
-    .form-control,
-    .form-select {
-        border-radius: 6px;
-        padding: 10px;
-        border: 1px solid var(--border-color);
-        font-size: 0.95rem;
-        width: 100%;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
-        outline: none;
-    }
-
-    .input-with-icon {
-        position: relative;
-    }
-
-    .input-icon {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        left: 10px;
-        color: #adb5bd;
-    }
-
-    .has-icon {
-        padding-left: 35px;
-    }
-
-    .required {
-        color: #dc3545;
-        margin-left: 3px;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .row>* {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .form-footer {
-        background-color: var(--light-gray);
-        padding: 20px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid var(--border-color);
-    }
-
-    .borrow-btn {
-        padding: 10px 20px;
-        border-radius: 6px;
-        border: none;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .borrow-btn {
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-    .borrow-btn:hover {
-        background-color: var(--accent-color);
-        box-shadow: 0 4px 10px rgba(67, 97, 238, 0.25);
-    }
-
-    .btn-outline {
-        background-color: transparent;
-        border: 1px solid var(--border-color);
-        color: var(--text-color);
-    }
-
-    .btn-outline:hover {
-        background-color: var(--light-gray);
-    }
-
-    .form-switch {
-        padding-left: 2.5em;
-    }
-
-    .form-switch .form-check-input {
-        width: 2em;
-        height: 1em;
-        background-color: #e9ecef;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-        background-position: left center;
-        border-radius: 2em;
-        transition: background-position 0.15s ease-in-out;
-    }
-
-    .form-switch .form-check-input:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        background-position: right center;
-    }
-
-    .form-text {
-        color: #6c757d;
-        font-size: 0.8rem;
-        margin-top: 5px;
-    }
-
-    .alert {
-        padding: 8px 12px;
-        border-radius: 6px;
-        margin-top: 10px;
-        font-size: 0.85rem;
-    }
-
-    .alert-warning {
-        background-color: #fff3cd;
-        color: #856404;
-        border: 1px solid #ffeeba;
-    }
-
-    @media (max-width: 992px) {
-        .form-content {
-            flex-direction: column;
-        }
-
-        .row {
-            flex-direction: column;
-        }
-
-        .row>* {
-            width: 100%;
-        }
-
-        .form-footer {
-            flex-direction: column-reverse;
-            gap: 15px;
-        }
-
-        .form-footer>* {
-            width: 100%;
-        }
-    }
-
-    .stepper {
-        display: flex;
-        justify-content: space-between;
-        margin: 40px auto;
-        max-width: 600px;
-        position: relative;
-        padding: 0 20px;
-    }
-
-    .stepper::before {
-        content: "";
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        right: 20px;
-        height: 4px;
-        background-color: #dcdcdc;
-        z-index: 0;
-    }
-
-    .step {
-        position: relative;
-        z-index: 1;
-        text-align: center;
-        flex: 1;
-    }
-
-    .step .circle {
-        width: 40px;
-        height: 40px;
-        margin: 0 auto 10px;
-        background-color: #dcdcdc;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        color: #555;
-    }
-
-    .step.active .circle {
-        background-color: #0d6efd;
-        color: #fff;
-    }
-
-    .step.completed .circle {
-        background-color: rgb(41, 84, 183);
-        color: #fff;
-    }
-
-    .step .label {
-        font-size: 14px;
-    }
-
-    .carousel-step {
-        display: none;
-    }
-
-    .carousel-step.active {
-        display: block;
-    }
-
-    .carousel-nav {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-</style>

@@ -4,7 +4,13 @@ require 'server.php';
 if (isset($_GET['category'])) {
     $category = $_GET['category'];
 
-    $stmt = $conn->prepare("SELECT item_name, quantity FROM all_items WHERE category = ?");
+    // Match category_name via JOIN
+    $stmt = $conn->prepare("
+        SELECT ai.item_name, ai.quantity 
+        FROM all_items ai
+        LEFT JOIN category c ON ai.category_id = c.category_id
+        WHERE c.category_name = ?
+    ");
     $stmt->bind_param("s", $category);
     $stmt->execute();
 

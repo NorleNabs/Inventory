@@ -5,16 +5,24 @@ $itemsPerPage = 5;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $itemsPerPage;
 
-$sql = "SELECT * FROM all_items LIMIT $itemsPerPage OFFSET $offset";
+$sql = "
+    SELECT ai.*, c.category_name
+    FROM all_items ai
+    LEFT JOIN category c ON ai.category_id = c.category_id
+    ORDER BY ai.date
+    LIMIT $itemsPerPage OFFSET $offset
+";
+
 $result = $conn->query($sql);
 
-$totalItemsResult = $conn->query("SELECT COUNT(*) as count FROM all_items");
+$totalItemsResult = $conn->query("SELECT COUNT(*) AS count FROM all_items");
 $totalItems = $totalItemsResult->fetch_assoc()['count'];
 $totalPages = ceil($totalItems / $itemsPerPage);
-
 ?>
 
-<table class="table inventory-table">
+<link rel="stylesheet" href="idex.css">
+
+<table class="table inventory-table shadow-md">
     <thead class="table-light">
         <tr>
             <th>Item</th>
@@ -60,7 +68,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                         <span class="status-badge <?php echo $statusClass; ?>"><?php echo $status; ?></span>
                     </td>
                     <td data-label="Category">
-                        <span class="category-pill"><?php echo htmlspecialchars($row['category']); ?></span>
+                        <span class="category-pill"><?= htmlspecialchars($row['category_name'] ?? ''); ?></span>
                     </td>
                     <td data-label="">
                         <div class="d-flex gap-2">
@@ -71,7 +79,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                                 data-image="<?= $row['item_img'] ? base64_encode($row['item_img']) : '' ?>"
                                 data-quantity="<?= htmlspecialchars($row['quantity']) ?>"
                                 data-price="<?= htmlspecialchars($row['price']) ?>"
-                                data-category="<?= htmlspecialchars($row['category']) ?>"
+                                data-category="<?= htmlspecialchars($row['category_name']) ?>"
                                 data-status="<?= htmlspecialchars($row['status']) ?>">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -80,7 +88,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                                 data-id="<?= htmlspecialchars($row['itemID']) ?>"
                                 data-name="<?= htmlspecialchars($row['item_name']) ?>"
                                 data-brand="<?= htmlspecialchars($row['item_brand']) ?>"
-                                data-category="<?= htmlspecialchars($row['category']) ?>"
+                                data-category="<?= htmlspecialchars($row['category_name']) ?>"
                                 data-quantity="<?= htmlspecialchars($row['quantity']) ?>"
                                 data-price="<?= htmlspecialchars($row['price']) ?>"
                                 data-status="<?= htmlspecialchars($row['status']) ?>"

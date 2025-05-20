@@ -17,26 +17,40 @@ if ($sumResult && $row = $sumResult->fetch_assoc()) {
 }
 
 
-$lowStockSql = "SELECT * FROM all_items WHERE quantity <= 2 ORDER BY quantity ASC";
+$lowStockSql = "
+    SELECT ai.*, c.category_name
+    FROM all_items ai
+    JOIN category c ON ai.category_id = c.category_id
+    WHERE ai.quantity <= 2
+    ORDER BY ai.quantity ASC
+";
+
 $lowStockResult = $conn->query($lowStockSql);
 
 $lowStockItems = [];
+$lowStockCount = 0;
+
 if ($lowStockResult && $lowStockResult->num_rows > 0) {
     while ($item = $lowStockResult->fetch_assoc()) {
         $lowStockItems[] = $item;
     }
+    $lowStockCount = count($lowStockItems);
 }
-$lowStockCount = count($lowStockItems);
 
 $categoryCount = 0;
-$categorySql = "SELECT COUNT(DISTINCT category) AS total_categories FROM all_items";
+$categorySql = "
+    SELECT COUNT(DISTINCT c.category_name) AS total_categories
+    FROM all_items ai
+    JOIN category c ON ai.category_id = c.category_id
+    WHERE ai.category_id IS NOT NULL
+";
 $categoryResult = $conn->query($categorySql);
 
 if ($categoryResult && $row = $categoryResult->fetch_assoc()) {
     $categoryCount = $row['total_categories'];
 }
 
-$requestSql = "SELECT * FROM borrow_request WHERE action = 'Pending'";
+$requestSql = "SELECT * FROM borrow_request WHERE action = 'Pending' ORDER BY date DESC LIMIT 7";
 $requestResult = $conn->query($requestSql);
 
 
@@ -158,7 +172,7 @@ $requestResult = $conn->query($requestSql);
 
                                     <!-- Category (middle) -->
                                     <div class="text-muted text-center" style="width: 150px;">
-                                        <?php echo htmlspecialchars($item['category']); ?>
+                                        <?= htmlspecialchars($item['category_name']) ?>
                                     </div>
 
                                     <!-- Quantity (right) -->

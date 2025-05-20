@@ -226,35 +226,7 @@ if (!isset($_SESSION['userID'])) {
 
 
 
-                        const addItemform = document.getElementById('addItemForm');
-                        if (addItemform) {
-                            addItemform.addEventListener('submit', function (e) {
-                                e.preventDefault();
 
-                                const formData = new FormData(addItemform);
-
-                                fetch('add_item_handler.php', {
-                                    method: 'POST',
-                                    body: formData,
-                                    headers: {
-                                        'X-Requested-With': 'XMLHttpRequest'
-                                    }
-                                })
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            addItemform.reset();
-                                            addItemform.classList.remove('was-validated');
-                                            new bootstrap.Modal(document.getElementById('successModal')).show();
-                                        } else {
-                                            alert('Error: ' + (data.error || 'Unknown error.'));
-                                        }
-                                    })
-                                    .catch(() => {
-                                        alert('Submission failed. Try again.');
-                                    });
-                            });
-                        }
 
                         const borrowRequestform = document.getElementById('borrowingForm');
                         if (borrowRequestform) {
@@ -335,6 +307,81 @@ if (!isset($_SESSION['userID'])) {
                             });
                         }
 
+                        const addItemform = document.getElementById('addItemForm');
+
+
+                        if (addItemform) {
+                            addItemform.addEventListener('submit', function (e) {
+                                e.preventDefault();
+
+                                const formData = new FormData(addItemform);
+
+                                fetch('add_item_handler.php', {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            addItemform.reset();
+                                            addItemform.classList.remove('was-validated');
+                                            new bootstrap.Modal(document.getElementById('successModal')).show();
+                                        } else {
+                                            alert('Error: ' + (data.error || 'Unknown error.'));
+                                        }
+                                    })
+                                    .catch(() => {
+                                        alert('Submission failed. Try again.');
+                                    });
+                            });
+                        }
+
+
+
+                        const addCategoryForm = document.getElementById('addCategoryForm');
+                        const categorySelect = document.getElementById('category');
+
+                        if (addCategoryForm) {
+                            addCategoryForm.addEventListener('submit', function (e) {
+                                e.preventDefault();
+
+                                const formData = new FormData(addCategoryForm);
+
+                                fetch('add_category.php', {
+                                    method: 'POST',
+                                    body: formData,
+                                })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
+                                            modal.hide();
+                                            new bootstrap.Modal(document.getElementById('successModal')).show();
+
+                                            addCategoryForm.reset(); // Keep this to clear only the category modal form
+
+                                            // Create and insert new option
+                                            const newOption = document.createElement('option');
+                                            newOption.value = data.id;
+                                            newOption.textContent = data.name;
+
+                                            const addNewOption = categorySelect.querySelector('option[value="add_new_category"]');
+                                            categorySelect.insertBefore(newOption, addNewOption);
+
+                                            // Select the newly added category
+                                            categorySelect.value = data.id;
+                                            categorySelect.dispatchEvent(new Event('change'));
+                                        } else {
+                                            alert('Failed to add category: ' + data.error);
+                                        }
+                                    })
+                                    .catch(() => alert('Something went wrong. Please try again.'));
+                            });
+                        }
+
 
                         document.querySelectorAll('.table-filter-btn').forEach(button => {
                             button.addEventListener('click', () => {
@@ -358,11 +405,6 @@ if (!isset($_SESSION['userID'])) {
                         });
 
 
-
-
-
-                        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
-                        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
 
 
                         if (url === 'borrow.php') {
@@ -480,16 +522,17 @@ if (!isset($_SESSION['userID'])) {
                             attachStepValidationListeners();
                             showStep(currentStep);
 
-                            itemSelect.addEventListener('change', function () {
+                            document.getElementById('itemName').addEventListener('change', function () {
                                 const selectedOption = this.options[this.selectedIndex];
                                 const quantity = selectedOption.dataset.quantity || 'N/A';
-                                quantitySpan.textContent = quantity;
+                                document.getElementById('availableQuantity').textContent = quantity;
                             });
+
+
+
                         }
 
                         if (url === 'view_all_item.php') {
-
-
 
                             function bindEditButtons() {
                                 const editButtons = document.querySelectorAll('.edit-button');
@@ -501,7 +544,7 @@ if (!isset($_SESSION['userID'])) {
                                         document.getElementById('editItemBrand').value = this.dataset.brand;
                                         document.getElementById('editItemQuantity').value = this.dataset.quantity;
                                         document.getElementById('editItemPrice').value = this.dataset.price;
-                                        document.getElementById('editItemCategory').value = this.dataset.category;
+                                        document.getElementById('editItemCategory').value = this.dataset.categoryId;
                                         document.getElementById('editItemStatus').value = this.dataset.status;
 
                                         const imagePreview = document.getElementById('editItemImagePreview');
@@ -514,6 +557,8 @@ if (!isset($_SESSION['userID'])) {
                                     });
                                 });
                             }
+
+
 
                             function bindViewDetailsButtons() {
                                 document.querySelectorAll('.view-details-button').forEach(button => {
@@ -583,11 +628,33 @@ if (!isset($_SESSION['userID'])) {
                                 fetch('load_items_table.php')
                                     .then(res => res.text())
                                     .then(html => {
-                                        document.getElementById('itemsTableBody').innerHTML = html;
+                                        const parser = new DOMParser();
+                                        const doc = parser.parseFromString(html, 'text/html');
 
+                                        // Update only the tbody content
+                                        const newTbody = doc.getElementById('itemsTableBody');
+                                        document.getElementById('itemsTableBody').innerHTML = newTbody.innerHTML;
+
+                                        // Also update pagination and table info (optional)
+                                        const newPagination = doc.getElementById('pagination');
+                                        if (newPagination) {
+                                            document.getElementById('pagination').innerHTML = newPagination.innerHTML;
+                                        }
+
+                                        const newInfo = doc.querySelector('.table-info');
+                                        const oldInfo = document.querySelector('.table-info');
+                                        if (newInfo && oldInfo) {
+                                            oldInfo.innerHTML = newInfo.innerHTML;
+                                        }
+
+                                        // Rebind buttons
                                         bindEditButtons();
-                                    });
+                                        bindViewDetailsButtons();
+                                        bindPaginationEvents();
+                                    })
+                                    .catch(err => console.error('Refresh fetch error:', err));
                             }
+
 
 
                             function bindPaginationEvents() {
@@ -603,15 +670,15 @@ if (!isset($_SESSION['userID'])) {
                                                 const parser = new DOMParser();
                                                 const doc = parser.parseFromString(html, 'text/html');
 
-                                                // Replace table rows
+
                                                 document.getElementById('itemsTableBody').innerHTML =
                                                     doc.getElementById('itemsTableBody').innerHTML;
 
-                                                // Replace pagination
+
                                                 document.getElementById('pagination').innerHTML =
                                                     doc.getElementById('pagination').innerHTML;
 
-                                                // ✅ Replace table-info
+
                                                 const newInfo = doc.querySelector('.table-info');
                                                 const oldInfo = document.querySelector('.table-info');
                                                 if (newInfo && oldInfo) {
@@ -640,6 +707,23 @@ if (!isset($_SESSION['userID'])) {
                             bindPaginationEvents();
                         }
 
+                        function handleCategoryChange(selectElement) {
+                            if (selectElement.value === "add_new_category") {
+                                selectElement.selectedIndex = 0;
+                                const modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+                                modal.show();
+                            }
+                        }
+
+                        if (url === 'add_item.php') {
+                            const categorySelect = document.getElementById('category');
+                            if (categorySelect) {
+                                categorySelect.addEventListener('change', function () {
+                                    handleCategoryChange(this);
+                                });
+                            }
+                        }
+
                     })
 
                     .catch(() => {
@@ -664,19 +748,23 @@ if (!isset($_SESSION['userID'])) {
                 if (xhr.status === 200) {
                     const items = JSON.parse(xhr.responseText);
                     const itemSelect = document.getElementById('itemName');
+                    const quantitySpan = document.getElementById('availableQuantity');
+
                     itemSelect.innerHTML = '<option selected disabled>Select Item</option>';
+                    quantitySpan.textContent = ''; // Clear on category change
 
                     items.forEach(function (item) {
                         const option = document.createElement('option');
                         option.value = item.item_name;
                         option.textContent = item.item_name;
-                        option.dataset.quantity = item.quantity;
+                        option.dataset.quantity = item.quantity; // ✅ Set quantity as data-attribute
                         itemSelect.appendChild(option);
                     });
                 }
             };
             xhr.send();
         }
+
 
     </script>
 </body>

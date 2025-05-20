@@ -1,5 +1,13 @@
+<?php
+include 'server.php';
+
+$query = "SELECT * FROM category";
+$result = mysqli_query($conn, $query);
+?>
+
+<link rel="stylesheet" href="subcontent.css">
 <div class="container">
-    <div class="form-container">
+    <div class="form-container shadow-md">
         <form id="addItemForm" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
             <div class="row">
                 <!-- Left Column -->
@@ -74,13 +82,21 @@
 
                     <div class="mb-4">
                         <label for="category" class="form-label">Category</label>
-                        <select class="form-select" id="category" name="category" required>
+                        <select class="form-select" id="category" name="category" required
+                            onchange="handleCategoryChange(this)">
                             <option value="" selected disabled>Select category</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Clothing">Clothing</option>
-                            <option value="Food">Food</option>
-                            <option value="Office Supplies">Office Supplies</option>
-                            <option value="Other">Other</option>
+                            <?php
+                            if ($result && mysqli_num_rows($result) > 0) {
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    $id = $row['category_id'];
+                                    $name = htmlspecialchars($row['category_name']);
+                                    echo "<option value=\"$id\">$name</option>";
+                                }
+                            } else {
+                                echo "<option disabled>No categories available</option>";
+                            }
+                            ?>
+                            <option value="add_new_category" class="text-primary">+ Add new category</option>
                         </select>
                         <div class="invalid-feedback">
                             Please select a category.
@@ -129,58 +145,42 @@
     </div>
 </div>
 
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="addCategoryForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newCategoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="newCategoryName" name="category_name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="newCategoryDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="newCategoryDescription" name="category_description"
+                            rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
 <script>
 </script>
-
-
-
-
-
-<style>
-    .form-container {
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        padding: 30px;
-        margin-top: 20px;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: #495057;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #80bdff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-
-    .btn-primary {
-        background-color: #0d6efd;
-        border: none;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
-
-    .btn-primary:hover {
-        background-color: #0b5ed7;
-        transform: translateY(-2px);
-    }
-
-    .input-with-icon .input-group-text {
-        background-color: #f8f9fa;
-    }
-
-    .page-title {
-        color: #343a40;
-        margin-bottom: 30px;
-    }
-
-    .form-section {
-        margin-bottom: 25px;
-    }
-</style>
