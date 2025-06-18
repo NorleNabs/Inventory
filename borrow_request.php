@@ -2,7 +2,17 @@
 require_once 'server.php'; // Your database connection
 
 // Fetch all borrow requests
-$sql = "SELECT * FROM borrow_request ORDER BY urgent DESC";
+$sql = "
+  SELECT * FROM borrow_request 
+  ORDER BY 
+    CASE 
+      WHEN action = 'Pending' AND urgent = 1 THEN 1
+      WHEN action = 'Pending' THEN 2
+      WHEN action = 'Approved' THEN 3
+      WHEN action = 'Rejected' THEN 4
+      ELSE 5
+    END
+";
 $result = $conn->query($sql);
 
 
@@ -15,12 +25,7 @@ if ($countResult && $countResult->num_rows > 0) {
     $totalRequests = $row['total'];
 }
 
-
 ?>
-
-
-
-
 
 <!-- Summary Stats -->
 <div class="row summary-stats">
@@ -177,19 +182,23 @@ if ($countResult && $countResult->num_rows > 0) {
                                         <span class="status-badge status-success">
                                             <?= htmlspecialchars($row['action']) ?>
                                         </span>
+                                    <?php elseif ($row['action'] == 'Disapproved'): ?>
+                                        <span class="status-badge status-urgent">
+                                            <?= htmlspecialchars($row['action']) ?>
+                                        </span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <button class="table-action-btn" data-bs-toggle="tooltip" title="View Details">
                                         <i class="bi bi-eye"></i>
                                     </button>
-                                    <?php if ($row['action'] !== 'Approved'): ?>
+                                    <?php if ($row['action'] === 'Pending'): ?>
                                         <button class="table-action-btn approve-btn"
                                             data-id="<?php echo $row['borrow_requestId']; ?>" data-bs-toggle="tooltip"
                                             title="Approve">
                                             <i class="bi bi-check-lg"></i>
                                         </button>
-                                        <button class="table-action-btn" data-bs-toggle="tooltip" title="Reject">
+                                        <button class="table-action-btn disapprove-btn" data-id="<?= $row['borrow_requestId'] ?>" data-bs-toggle="tooltip" title="Reject">
                                             <i class="bi bi-x-lg"></i>
                                         </button>
                                     <?php endif; ?>

@@ -156,7 +156,7 @@ if (!isset($_SESSION['userID'])) {
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" onclick="confirmLogout()">Logout</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="confirmLogout()">Logout</a></li>
                             </ul>
                         </div>
                     </div>
@@ -726,40 +726,70 @@ if (!isset($_SESSION['userID'])) {
                                 addDepartmentForm.addEventListener('submit', function (e) {
                                     e.preventDefault();
 
-                                    const formData = new FormData(addDepartmentForm);
+                                    Swal.fire({
+                                        title: 'Are you sure?',
+                                        text: 'Do you want to add this department?',
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes, add it',
+                                        cancelButtonText: 'Cancel'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            const formData = new FormData(addDepartmentForm);
 
-                                    fetch('add_department.php', {
-                                        method: 'POST',
-                                        body: formData,
-                                    })
-                                        .then(res => res.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                // Hide modal
-                                                const modalInstance = bootstrap.Modal.getInstance(document.getElementById('addDepartmentModal'));
-                                                modalInstance.hide();
-                                                showAlertAddDepartment()
-                                                addDepartmentForm.reset();
+                                            fetch('add_department.php', {
+                                                method: 'POST',
+                                                body: formData,
+                                            })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    // Hide modal
+                                                    const modalInstance = bootstrap.Modal.getInstance(document.getElementById('addDepartmentModal'));
+                                                    modalInstance.hide();
 
-                                                // Add new option to select
-                                                const newOption = document.createElement('option');
-                                                newOption.value = data.id;
-                                                newOption.textContent = data.name;
+                                                    // Success alert
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: 'Department added successfully!',
+                                                        showConfirmButton: false,
+                                                        timer: 1500
+                                                    });
 
-                                                // Insert before the "Add new department" option
-                                                const addNewOption = departmentSelect.querySelector('option[value="add_new_department"]');
-                                                departmentSelect.insertBefore(newOption, addNewOption);
+                                                    addDepartmentForm.reset();
 
-                                                // Select the newly added department
-                                                departmentSelect.value = data.id;
-                                                departmentSelect.dispatchEvent(new Event('change'));
-                                            } else {
-                                                alert('Error adding department: ' + data.error);
-                                            }
-                                        })
-                                        .catch(() => alert('Something went wrong. Please try again.'));
+                                                    // Add new option to select
+                                                    const newOption = document.createElement('option');
+                                                    newOption.value = data.id;
+                                                    newOption.textContent = data.name;
+
+                                                    // Insert before the "Add new department" option
+                                                    const addNewOption = departmentSelect.querySelector('option[value="add_new_department"]');
+                                                    departmentSelect.insertBefore(newOption, addNewOption);
+
+                                                    // Select the newly added department
+                                                    departmentSelect.value = data.id;
+                                                    departmentSelect.dispatchEvent(new Event('change'));
+                                                } else {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Error adding department',
+                                                        text: data.error || 'Unknown error.'
+                                                    });
+                                                }
+                                            })
+                                            .catch(() => {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Something went wrong',
+                                                    text: 'Please try again.'
+                                                });
+                                            });
+                                        }
+                                    });
                                 });
                             }
+
 
                             const addPositionForm = document.getElementById('addPositionForm');
 
@@ -767,44 +797,73 @@ if (!isset($_SESSION['userID'])) {
                                 addPositionForm.addEventListener('submit', function (e) {
                                     e.preventDefault();
 
-                                    const formData = new FormData(addPositionForm);
-                                    const departmentSelect = document.getElementById('department');
-                                    if (departmentSelect) {
-                                        formData.append('position_department', departmentSelect.value);
-                                    }
-
-                                    fetch('add_position.php', {
-                                        method: 'POST',
-                                        body: formData,
-                                    })
-                                        .then(res => res.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                const modal = bootstrap.Modal.getInstance(document.getElementById('addPositionModal'));
-                                                modal.hide();
-                                                showAlertAddedPosition();
-
-                                                addPositionForm.reset();
-
-                                                // Add new option to the select
-                                                const positionSelect = document.getElementById('position');
-                                                if (positionSelect) {
-                                                    const newOption = document.createElement('option');
-                                                    newOption.value = data.id;
-                                                    newOption.textContent = data.name;
-
-                                                    const addNewOption = positionSelect.querySelector('option[value="add_new_position"]');
-                                                    positionSelect.insertBefore(newOption, addNewOption);
-                                                    positionSelect.value = data.id;
-                                                    positionSelect.dispatchEvent(new Event('change'));
-                                                }
-                                            } else {
-                                                alert('Failed to add position: ' + data.error);
+                                    Swal.fire({
+                                        title: 'Are you sure?',
+                                        text: 'Do you want to add this position?',
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes, add it',
+                                        cancelButtonText: 'Cancel'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            const formData = new FormData(addPositionForm);
+                                            const departmentSelect = document.getElementById('department');
+                                            if (departmentSelect) {
+                                                formData.append('position_department', departmentSelect.value);
                                             }
-                                        })
-                                        .catch(() => alert('Something went wrong. Please try again.'));
+
+                                            fetch('add_position.php', {
+                                                method: 'POST',
+                                                body: formData,
+                                            })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    const modal = bootstrap.Modal.getInstance(document.getElementById('addPositionModal'));
+                                                    modal.hide();
+
+                                                    // Show success alert
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: 'Position added successfully!',
+                                                        showConfirmButton: false,
+                                                        timer: 1500
+                                                    });
+
+                                                    addPositionForm.reset();
+
+                                                    // Add new option to the select
+                                                    const positionSelect = document.getElementById('position');
+                                                    if (positionSelect) {
+                                                        const newOption = document.createElement('option');
+                                                        newOption.value = data.id;
+                                                        newOption.textContent = data.name;
+
+                                                        const addNewOption = positionSelect.querySelector('option[value="add_new_position"]');
+                                                        positionSelect.insertBefore(newOption, addNewOption);
+                                                        positionSelect.value = data.id;
+                                                        positionSelect.dispatchEvent(new Event('change'));
+                                                    }
+                                                } else {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Failed to add position',
+                                                        text: data.error || 'Unknown error.'
+                                                    });
+                                                }
+                                            })
+                                            .catch(() => {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Something went wrong',
+                                                    text: 'Please try again.'
+                                                });
+                                            });
+                                        }
+                                    });
                                 });
                             }
+
 
 
 
@@ -812,37 +871,64 @@ if (!isset($_SESSION['userID'])) {
 
                             if (addUserForm) {
                                 addUserForm.addEventListener('submit', function (e) {
-                                    e.preventDefault();
+                                e.preventDefault();
 
+                                Swal.fire({
+                                    title: 'Are you sure?',
+                                    text: "Do you want to add this user?",
+                                    icon: 'question',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Yes, add user',
+                                    cancelButtonText: 'Cancel'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        const formData = new FormData(addUserForm);
 
-                                    const formData = new FormData(addUserForm);
-
-                                    fetch('add_user_handler.php', {
-                                        method: 'POST',
-                                        body: formData,
-                                        headers: {
-                                            'X-Requested-With': 'XMLHttpRequest'
-                                        }
-                                    })
+                                        fetch('add_user_handler.php', {
+                                            method: 'POST',
+                                            body: formData,
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest'
+                                            }
+                                        })
                                         .then(res => res.json())
                                         .then(data => {
                                             if (data.success) {
                                                 // Close modal (if using Bootstrap modal)
                                                 const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
                                                 if (modal) modal.hide();
-                                                showAlertAddUser()
+
+                                                // Success alert
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'User added successfully!',
+                                                    showConfirmButton: false,
+                                                    timer: 1500
+                                                });
+
                                                 // Reset form
                                                 addUserForm.reset();
                                                 addUserForm.classList.remove('was-validated');
                                             } else {
-                                                alert('Error: ' + (data.error || 'Unknown error.'));
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Error',
+                                                    text: data.error || 'Unknown error.'
+                                                });
                                             }
                                         })
                                         .catch(() => {
-                                            alert('Submission failed. Try again.');
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Submission failed',
+                                                text: 'Try again.'
+                                            });
                                         });
+                                    }
                                 });
-                            }
+                            });
+                        }
+
 
 
                         }
@@ -889,6 +975,47 @@ if (!isset($_SESSION['userID'])) {
                                                 .catch(() => {
                                                     Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
                                                 });
+                                        }
+                                    });
+                                });
+                            });
+                            document.querySelectorAll('.disapprove-btn').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const requestId = this.getAttribute('data-id');
+                                    const disapproveButton = this;
+
+                                    Swal.fire({
+                                        title: 'Are you sure to disapprove this request?',
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes, Disapprove',
+                                        cancelButtonText: 'Cancel'
+                                    }).then(result => {
+                                        if (result.isConfirmed) {
+                                            const formData = new FormData();
+                                            formData.append('request_id', requestId);
+
+                                            fetch('disapprovedrequest_handler.php', {
+                                                method: 'POST',
+                                                body: formData,
+                                            })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    Swal.fire('Disapproved', 'The request has been disapproved.', 'success');
+
+                                                    const statusCell = document.getElementById('status-' + requestId);
+                                                    if (statusCell) statusCell.textContent = 'Disapproved';
+
+                                                    disapproveButton.disabled = true;
+                                                    disapproveButton.title = "Already Disapproved";
+                                                } else {
+                                                    Swal.fire('Error', data.error || 'Disapproval failed.', 'error');
+                                                }
+                                            })
+                                            .catch(() => {
+                                                Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                                            });
                                         }
                                     });
                                 });

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Login Form - Bootstrap</title>
+    <title>Log in to Invex</title>
     <link rel="icon" href="anong-context-nung-nakadila-si-alden-v0-q630lpmhcj0f1.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"
@@ -127,7 +127,7 @@
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
                 <div class="card login-card p-4">
                     <div class="card-header text-center pb-0">
-                        <h2 class="fw-bold mb-1">Welcome to InventoyPro</h2>
+                        <h2 class="fw-bold mb-1">Welcome to InVex</h2>
                         <p class="text-muted mb-4">Please sign in to continue</p>
                     </div>
                     <div class="card-body">

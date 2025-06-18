@@ -1,4 +1,6 @@
 <?php
+
+session_start();
 require 'server.php';
 
 // Fetch unique category names from the category table
@@ -69,8 +71,16 @@ $deptResult = $conn->query("SELECT * FROM department");
                                     class="required">*</span></label>
                             <div class="input-with-icon">
                                 <i class="fas fa-user input-icon"></i>
-                                <input type="text" class="form-control has-icon" name="borrowerName" id="borrowerName"
-                                    placeholder="Enter your name" required>
+                                <input 
+                                    type="text" 
+                                    class="form-control has-icon" 
+                                    name="borrowerName" 
+                                    id="borrowerName"
+                                    placeholder="Enter your name" 
+                                    required 
+                                    value="<?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : ''; ?>"
+                                    disabled
+                                >
                             </div>
                         </div>
 
@@ -78,8 +88,16 @@ $deptResult = $conn->query("SELECT * FROM department");
                             <label for="email" class="form-label">Email Address<span class="required">*</span></label>
                             <div class="input-with-icon">
                                 <i class="fas fa-envelope input-icon"></i>
-                                <input type="email" class="form-control has-icon" id="email" name="email"
-                                    placeholder="example@email.com" required>
+                                <input 
+                                    type="text" 
+                                    class="form-control has-icon" 
+                                    name="email" 
+                                    id="email"
+                                    placeholder="Enter your email" 
+                                    required 
+                                    value="<?php echo isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : ''; ?>"
+                                    disabled
+                                >
                             </div>
                         </div>
                     </div>
@@ -89,8 +107,16 @@ $deptResult = $conn->query("SELECT * FROM department");
                             <label for="phone" class="form-label">Phone Number</label>
                             <div class="input-with-icon">
                                 <i class="fas fa-phone input-icon"></i>
-                                <input type="tel" class="form-control has-icon" id="phone" name="phone"
-                                    placeholder="(123) 456-7890" required>
+                                <input 
+                                    type="text" 
+                                    class="form-control has-icon" 
+                                    name="phone" 
+                                    id="phone"
+                                    placeholder="Enter your Contact Number" 
+                                    required 
+                                    value="<?php echo isset($_SESSION['contactNo']) ? htmlspecialchars($_SESSION['contactNo']) : ''; ?>"
+                                    disabled
+                                >
                             </div>
                         </div>
 

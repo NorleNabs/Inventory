@@ -113,7 +113,7 @@ $deptResult = $conn->query("SELECT * FROM department");
 
                         <div class="col-md-6">
                             <label class="form-label">Contact No.</label>
-                            <input type="text" name="contact" class="form-control" required>
+                            <input type="number" name="contact" class="form-control" required>
                         </div>
 
                         <div class="col-md-6">
