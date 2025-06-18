@@ -6,7 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Prepare SQL query
     $stmt = $conn->prepare("SELECT * FROM users_account WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -15,9 +14,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($result && $result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
-        // 🔓 Plaintext password comparison (NOT recommended long-term)
-        if ($password === $user['password']) {
-            // Successful login
+        // ✅ Use password_verify to check hashed password
+        if (password_verify($password, $user['password'])) {
             $_SESSION['userID'] = $user['userID'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['users_role'];
@@ -27,8 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             header("Location: index.php");
             exit;
         } else {
-            echo "Entered password: $password <br>";
-            echo "Stored password: " . $user['password'] . "<br>";
             echo "❌ Incorrect password.";
         }
     } else {

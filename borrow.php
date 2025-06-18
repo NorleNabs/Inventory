@@ -11,9 +11,11 @@ $sql = "
 ";
 
 $result = $conn->query($sql);
+
+$deptResult = $conn->query("SELECT * FROM department");
 ?>
 
-<link rel="stylesheet" href="subcontent.css">
+<link rel="stylesheet" href="subcontent_inventory.css">
 
 <div class="main-container">
     <div class="form-header">
@@ -94,13 +96,19 @@ $result = $conn->query($sql);
 
                         <div class="form-group">
                             <label for="department" class="form-label">Department</label>
-                            <select class="form-select" id="department" required>
+                            <select class="form-select" id="department" name="department" required>
                                 <option selected disabled>Select department</option>
-                                <option value="admin">Administration</option>
-                                <option value="it">IT</option>
-                                <option value="hr">Human Resources</option>
-                                <option value="marketing">Marketing</option>
-                                <option value="other">Other</option>
+                                <?php
+                                if ($deptResult && $deptResult->num_rows > 0) {
+                                    while ($row = $deptResult->fetch_assoc()) {
+                                        $id = $row['departmentID'];
+                                        $name = htmlspecialchars($row['department_name']);
+                                        echo "<option value=\"$id\">$name</option>";
+                                    }
+                                } else {
+                                    echo '<option disabled>No departments available</option>';
+                                }
+                                ?>
                             </select>
                         </div>
                     </div>
@@ -229,7 +237,7 @@ $result = $conn->query($sql);
                     <div class="form-group">
                         <label for="remarks" class="form-label">Additional Notes</label>
                         <textarea class="form-control" id="remarks" rows="3" name="remarks"
-                            placeholder="Any additional details or special requirements..."></textarea>
+                            placeholder="Remarks, N/A if none"></textarea>
                         <div class="form-text">Please include any special handling instructions or other relevant
                             information.</div>
                     </div>

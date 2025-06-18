@@ -3,6 +3,7 @@ include 'server.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $item_name = $_POST['item_name'];
+    $item_type = $_POST['item_type'];
     $item_brand = $_POST['item_brand'];
     $quantity = intval($_POST['quantity']);
     $price = floatval($_POST['price']);
@@ -18,12 +19,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO all_items (item_name, item_brand, item_img, quantity, price, status, category_id, date, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO all_items (item_name, item_type, item_brand, item_img, quantity, price, status, category_id, date, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     //                           s      s       b     i    d    s     i     s     s
-    $stmt->bind_param("ssbississ", $item_name, $item_brand, $null, $quantity, $price, $status, $category_id, $date, $description);
+    $stmt->bind_param("sssbississ", $item_name, $item_type, $item_brand, $null, $quantity, $price, $status, $category_id, $date, $description);
 
     // Bind image as long data (index 3rd parameter, which is index 2 in 0-based)
-    $stmt->send_long_data(2, $imageData);
+    $stmt->send_long_data(3, $imageData);
 
     if ($stmt->execute()) {
         echo json_encode(['success' => true]);

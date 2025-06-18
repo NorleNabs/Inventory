@@ -168,21 +168,31 @@ if ($countResult && $countResult->num_rows > 0) {
                                             class="purpose-text"><?= htmlspecialchars(substr($row['purpose'], 0, 20)) ?>...</span>
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="status-badge">
-                                        <?= htmlspecialchars($row['action']) ?>
-                                    </span>
+                                <td id="status-<?php echo $row['borrow_requestId']; ?>">
+                                    <?php if ($row['action'] == 'Pending'): ?>
+                                        <span class="status-badge status-extension">
+                                            <?= htmlspecialchars($row['action']) ?>
+                                        </span>
+                                    <?php elseif ($row['action'] == 'Approved'): ?>
+                                        <span class="status-badge status-success">
+                                            <?= htmlspecialchars($row['action']) ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <button class="table-action-btn" data-bs-toggle="tooltip" title="View Details">
                                         <i class="bi bi-eye"></i>
                                     </button>
-                                    <button class="table-action-btn" data-bs-toggle="tooltip" title="Approve">
-                                        <i class="bi bi-check-lg"></i>
-                                    </button>
-                                    <button class="table-action-btn" data-bs-toggle="tooltip" title="Reject">
-                                        <i class="bi bi-x-lg"></i>
-                                    </button>
+                                    <?php if ($row['action'] !== 'Approved'): ?>
+                                        <button class="table-action-btn approve-btn"
+                                            data-id="<?php echo $row['borrow_requestId']; ?>" data-bs-toggle="tooltip"
+                                            title="Approve">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                        <button class="table-action-btn" data-bs-toggle="tooltip" title="Reject">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -478,6 +488,11 @@ if ($countResult && $countResult->num_rows > 0) {
 
     .status-extension {
         background-color: rgba(255, 170, 90, 0.15);
+        color: black;
+    }
+
+    .status-success {
+        background-color: rgba(76, 240, 169, 0.15);
         color: black;
     }
 

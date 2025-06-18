@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['userID'])) {
-    header("Location: log_in.php"); // or login.php if you use a combined login form/page
+    header("Location: log_in.php");
     exit;
 }
 ?>
@@ -13,7 +13,7 @@ if (!isset($_SESSION['userID'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory System</title>
+    <title>InVex</title>
     <link rel="icon" href="anong-context-nung-nakadila-si-alden-v0-q630lpmhcj0f1.png" type="image/png">
     <link rel="stylesheet" href="idex.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
@@ -29,7 +29,7 @@ if (!isset($_SESSION['userID'])) {
         <nav id="sidebar">
             <div class="sidebar-header d-flex align-items-center">
                 <i class="bi bi-box-seam fs-2 me-2"></i>
-                <span class="logo-text">InventoryPro</span>
+                <span class="logo-text">InVex</span>
             </div>
 
             <ul class="list-unstyled components">
@@ -58,58 +58,63 @@ if (!isset($_SESSION['userID'])) {
                                 <span class="submenu-text">Borrow Item</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="add_item.php" class="load-content">
-                                <i class="bi bi-plus-circle fs-5 sub-icon"></i>
-                                <span class="submenu-text">Add New Item</span>
-                            </a>
-                        </li>
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                            <li>
+                                <a href="add_item.php" class="load-content">
+                                    <i class="bi bi-plus-circle fs-5 sub-icon"></i>
+                                    <span class="submenu-text">Add New Item</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a href="#" class="has-submenu" data-bs-toggle="collapse" data-bs-target="#stockSubmenu">
-                        <i class="bi bi-stack fs-5"></i>
-                        <span class="menu-text">Management</span>
-                    </a>
-                    <ul class="collapse list-unstyled submenu" id="stockSubmenu">
-                        <li>
-                            <a href="borrow_request.php" class="load-content">
-                                <i class="bi bi-arrow-down-up fs-5 sub-icon"></i>
-                                <span class="submenu-text">Borrow Request</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="">
-                                <i class="bi bi-clipboard-check fs-5 sub-icon"></i>
-                                <span class="submenu-text">Stock Count</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="">
-                                <i class="bi bi-exclamation-triangle fs-5 sub-icon"></i>
-                                <span class="submenu-text">Low Stock Alerts</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                    <li class="nav-item">
+                        <a href="#" class="has-submenu" data-bs-toggle="collapse" data-bs-target="#stockSubmenu">
+                            <i class="bi bi-stack fs-5"></i>
+                            <span class="menu-text">Management</span>
+                        </a>
+                        <ul class="collapse list-unstyled submenu" id="stockSubmenu">
+                            <li>
+                                <a href="borrow_request.php" class="load-content">
+                                    <i class="bi bi-arrow-down-up fs-5 sub-icon"></i>
+                                    <span class="submenu-text">Borrow Request</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="bi bi-clipboard-check fs-5 sub-icon"></i>
+                                    <span class="submenu-text">Stock Count</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="bi bi-exclamation-triangle fs-5 sub-icon"></i>
+                                    <span class="submenu-text">Low Stock Alerts</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                <?php endif; ?>
 
 
-                <li class="nav-item">
-                    <a href="report.html" class="load-content">
-                        <i class="bi bi-graph-up fs-5"></i>
-                        <span class="menu-text">Reports</span>
-                    </a>
-                </li>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                    <li class="nav-item">
+                        <a href="report.html" class="load-content">
+                            <i class="bi bi-graph-up fs-5"></i>
+                            <span class="menu-text">Reports</span>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="#">
-                        <i class="bi bi-gear fs-5"></i>
-                        <span class="menu-text">Settings</span>
-                    </a>
-                </li>
-            </ul>
-
+                    <li class="nav-item">
+                        <a href="user_management.php" class="load-content">
+                            <i class="bi bi-person-fill-gear fs-5"></i>
+                            <span class="menu-text">User Management</span>
+                        </a>
+                    </li>
+                </ul>
+            <?php endif; ?>
             <div class="sidebar-footer">
                 <a id="sidebarCollapse" class="btn btn-sm btn-outline-secondary d-flex align-items-center">
                     <i class="bi bi-arrow-left-right"></i>
@@ -147,12 +152,11 @@ if (!isset($_SESSION['userID'])) {
                                 <i class="bi bi-person-circle"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="#">Profile</a></li>
                                 <li><a class="dropdown-item" href="#">Settings</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="#">Logout</a></li>
+                                <li><a class="dropdown-item" onclick="confirmLogout()">Logout</a></li>
                             </ul>
                         </div>
                     </div>
@@ -167,9 +171,13 @@ if (!isset($_SESSION['userID'])) {
         </div>
     </div>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="inventory.js"></script>
+
+
 
     <script>
 
@@ -183,6 +191,7 @@ if (!isset($_SESSION['userID'])) {
                 'borrow.php': 'Borrow Item',
                 'report.html': 'Reports',
                 'borrow_request.php': 'Borrow Request',
+                'user_management.php': 'User Management',
 
                 // Add more as needed
             };
@@ -247,7 +256,7 @@ if (!isset($_SESSION['userID'])) {
                                         if (data.success) {
                                             borrowRequestform.reset();
                                             borrowRequestform.classList.remove('was-validated');
-                                            new bootstrap.Modal(document.getElementById('successModal')).show();
+                                            showAlertBorrowRequest()
                                         } else {
                                             alert('Error: ' + (data.error || 'Unknown error.'));
                                         }
@@ -259,6 +268,7 @@ if (!isset($_SESSION['userID'])) {
 
 
                         }
+
 
                         function validateFileSize(input) {
                             const maxSize = 5 * 1024 * 1024;
@@ -295,6 +305,7 @@ if (!isset($_SESSION['userID'])) {
                                             refreshItemsTable();
                                             const modal = bootstrap.Modal.getInstance(document.getElementById('editItemModal'));
                                             modal.hide();
+                                            showAlertEditItem()
 
 
                                         } else {
@@ -328,7 +339,7 @@ if (!isset($_SESSION['userID'])) {
                                         if (data.success) {
                                             addItemform.reset();
                                             addItemform.classList.remove('was-validated');
-                                            new bootstrap.Modal(document.getElementById('successModal')).show();
+                                            showAlertAddedItem()
                                         } else {
                                             alert('Error: ' + (data.error || 'Unknown error.'));
                                         }
@@ -359,7 +370,7 @@ if (!isset($_SESSION['userID'])) {
                                         if (data.success) {
                                             const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
                                             modal.hide();
-                                            new bootstrap.Modal(document.getElementById('successModal')).show();
+                                            showAlertAddedCategory()
 
                                             addCategoryForm.reset(); // Keep this to clear only the category modal form
 
@@ -707,6 +718,183 @@ if (!isset($_SESSION['userID'])) {
                             bindPaginationEvents();
                         }
 
+                        if (url === 'user_management.php') {
+                            const addDepartmentForm = document.getElementById('addDepartmentForm');
+                            const departmentSelect = document.getElementById('department');
+
+                            if (addDepartmentForm) {
+                                addDepartmentForm.addEventListener('submit', function (e) {
+                                    e.preventDefault();
+
+                                    const formData = new FormData(addDepartmentForm);
+
+                                    fetch('add_department.php', {
+                                        method: 'POST',
+                                        body: formData,
+                                    })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                // Hide modal
+                                                const modalInstance = bootstrap.Modal.getInstance(document.getElementById('addDepartmentModal'));
+                                                modalInstance.hide();
+                                                showAlertAddDepartment()
+                                                addDepartmentForm.reset();
+
+                                                // Add new option to select
+                                                const newOption = document.createElement('option');
+                                                newOption.value = data.id;
+                                                newOption.textContent = data.name;
+
+                                                // Insert before the "Add new department" option
+                                                const addNewOption = departmentSelect.querySelector('option[value="add_new_department"]');
+                                                departmentSelect.insertBefore(newOption, addNewOption);
+
+                                                // Select the newly added department
+                                                departmentSelect.value = data.id;
+                                                departmentSelect.dispatchEvent(new Event('change'));
+                                            } else {
+                                                alert('Error adding department: ' + data.error);
+                                            }
+                                        })
+                                        .catch(() => alert('Something went wrong. Please try again.'));
+                                });
+                            }
+
+                            const addPositionForm = document.getElementById('addPositionForm');
+
+                            if (addPositionForm) {
+                                addPositionForm.addEventListener('submit', function (e) {
+                                    e.preventDefault();
+
+                                    const formData = new FormData(addPositionForm);
+                                    const departmentSelect = document.getElementById('department');
+                                    if (departmentSelect) {
+                                        formData.append('position_department', departmentSelect.value);
+                                    }
+
+                                    fetch('add_position.php', {
+                                        method: 'POST',
+                                        body: formData,
+                                    })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                const modal = bootstrap.Modal.getInstance(document.getElementById('addPositionModal'));
+                                                modal.hide();
+                                                showAlertAddedPosition();
+
+                                                addPositionForm.reset();
+
+                                                // Add new option to the select
+                                                const positionSelect = document.getElementById('position');
+                                                if (positionSelect) {
+                                                    const newOption = document.createElement('option');
+                                                    newOption.value = data.id;
+                                                    newOption.textContent = data.name;
+
+                                                    const addNewOption = positionSelect.querySelector('option[value="add_new_position"]');
+                                                    positionSelect.insertBefore(newOption, addNewOption);
+                                                    positionSelect.value = data.id;
+                                                    positionSelect.dispatchEvent(new Event('change'));
+                                                }
+                                            } else {
+                                                alert('Failed to add position: ' + data.error);
+                                            }
+                                        })
+                                        .catch(() => alert('Something went wrong. Please try again.'));
+                                });
+                            }
+
+
+
+                            const addUserForm = document.getElementById('addUserForm');
+
+                            if (addUserForm) {
+                                addUserForm.addEventListener('submit', function (e) {
+                                    e.preventDefault();
+
+
+                                    const formData = new FormData(addUserForm);
+
+                                    fetch('add_user_handler.php', {
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest'
+                                        }
+                                    })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                // Close modal (if using Bootstrap modal)
+                                                const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+                                                if (modal) modal.hide();
+                                                showAlertAddUser()
+                                                // Reset form
+                                                addUserForm.reset();
+                                                addUserForm.classList.remove('was-validated');
+                                            } else {
+                                                alert('Error: ' + (data.error || 'Unknown error.'));
+                                            }
+                                        })
+                                        .catch(() => {
+                                            alert('Submission failed. Try again.');
+                                        });
+                                });
+                            }
+
+
+                        }
+
+                        if (url === 'borrow_request.php') {
+                            document.querySelectorAll('.approve-btn').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const requestId = this.getAttribute('data-id');
+                                    const approveButton = this;
+                                    console.log('Request ID:', requestId);
+                                    // Show confirmation dialog
+                                    Swal.fire({
+                                        title: 'Are you sure to approve this request?',
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes',
+                                        cancelButtonText: 'No'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            // User clicked Yes - proceed with AJAX
+                                            const formData = new FormData();
+                                            formData.append('request_id', requestId);
+
+                                            fetch('approverequest_handler.php', {
+                                                method: 'POST',
+                                                body: formData,
+                                            })
+                                                .then(res => res.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        Swal.fire('Approved!', 'The request has been approved.', 'success');
+
+                                                        // Update the status cell
+                                                        const statusCell = document.getElementById('status-' + requestId);
+                                                        if (statusCell) statusCell.textContent = 'Approved';
+
+                                                        // Disable or hide the approve button
+                                                        approveButton.disabled = true;
+                                                        approveButton.title = "Already Approved";
+                                                    } else {
+                                                        Swal.fire('Error', data.error || 'Approval failed.', 'error');
+                                                    }
+                                                })
+                                                .catch(() => {
+                                                    Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                                                });
+                                        }
+                                    });
+                                });
+                            });
+                        }
+
                         function handleCategoryChange(selectElement) {
                             if (selectElement.value === "add_new_category") {
                                 selectElement.selectedIndex = 0;
@@ -724,6 +912,97 @@ if (!isset($_SESSION['userID'])) {
                             }
                         }
 
+                        function handleDepartmentChange(select) {
+                            const departmentId = select.value;
+                            const positionSelect = document.getElementById('position');
+
+                            // If "Add new department" is selected, show the modal
+                            if (departmentId === 'add_new_department') {
+                                const deptModal = new bootstrap.Modal(document.getElementById('addDepartmentModal'));
+                                deptModal.show();
+                                select.value = "";
+                                positionSelect.disabled = true;
+                                return;
+                            }
+
+                            // Enable the position dropdown
+                            positionSelect.disabled = false;
+                            // Otherwise, fetch positions based on selected department
+
+                            positionSelect.innerHTML = '<option disabled selected>Loading positions...</option>';
+
+                            const formData = new FormData();
+                            formData.append('department_id', departmentId);
+
+                            fetch('get_positions.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    positionSelect.innerHTML = ''; // Clear all options
+
+                                    if (data.success && data.positions.length > 0) {
+                                        const defaultOption = document.createElement('option');
+                                        defaultOption.disabled = true;
+                                        defaultOption.selected = true;
+                                        defaultOption.textContent = "Select position";
+                                        positionSelect.appendChild(defaultOption);
+
+                                        data.positions.forEach(pos => {
+                                            const opt = document.createElement('option');
+                                            opt.value = pos.positionId;
+                                            opt.textContent = pos.position_name;
+                                            positionSelect.appendChild(opt);
+                                        });
+                                    } else {
+                                        const opt = document.createElement('option');
+                                        opt.disabled = true;
+                                        opt.selected = true;
+                                        opt.textContent = "No positions available";
+                                        positionSelect.appendChild(opt);
+                                    }
+
+                                    // Add "Add new position" option
+                                    const addNewOption = document.createElement('option');
+                                    addNewOption.value = "add_new_position";
+                                    addNewOption.classList.add('text-primary');
+                                    addNewOption.textContent = "+ Add new position";
+                                    positionSelect.appendChild(addNewOption);
+
+                                })
+                                .catch(err => {
+                                    console.error("Error fetching positions:", err);
+                                    positionSelect.innerHTML = '<option disabled selected>Error loading positions</option>';
+                                });
+                        }
+
+
+                        function handlePositionChange(select) {
+                            if (select.value === 'add_new_position') {
+                                const posModal = new bootstrap.Modal(document.getElementById('addPositionModal'));
+                                posModal.show();
+                                select.value = "";
+                            }
+                        }
+
+                        if (url === 'user_management.php') {
+                            const departmentSelect = document.getElementById('department');
+                            if (departmentSelect) {
+                                departmentSelect.addEventListener('change', function () {
+                                    handleDepartmentChange(this);
+                                });
+                            }
+
+                            const positionSelect = document.getElementById('position');
+                            if (positionSelect) {
+                                positionSelect.addEventListener('change', function () {
+                                    handlePositionChange(this);
+                                });
+                            }
+                        }
+
+
                     })
 
                     .catch(() => {
@@ -736,6 +1015,78 @@ if (!isset($_SESSION['userID'])) {
 
 
         });
+
+        function showAlertAddedItem() {
+            Swal.fire({
+                title: 'Item Added Successfully!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }
+
+        function showAlertEditItem() {
+            Swal.fire({
+                title: 'Item Edited Successfully!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }
+
+        function showAlertAddedCategory() {
+            Swal.fire({
+                title: 'Category Added Successfully!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }
+
+        function showAlertBorrowRequest() {
+            Swal.fire({
+                title: 'Request Submitted Successfully!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }
+
+        function showAlertAddUser() {
+            Swal.fire({
+                title: 'User Added Successfully!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }
+
+        function showAlertAddDepartment() {
+            Swal.fire({
+                title: 'Department Added Successfully!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }
+
+        function showAlertAddedPosition() {
+            Swal.fire({
+                title: 'Position Added Successfully!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }
+
+
+        function confirmLogout() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "log_in.php";
+                }
+            });
+        }
 
 
 

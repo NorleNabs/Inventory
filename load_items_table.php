@@ -20,7 +20,7 @@ $totalItems = $totalItemsResult->fetch_assoc()['count'];
 $totalPages = ceil($totalItems / $itemsPerPage);
 ?>
 
-<link rel="stylesheet" href="idex.css">
+<link rel="stylesheet" href="subcontent.css">
 
 <table class="table inventory-table shadow-md">
     <thead class="table-light">
@@ -41,7 +41,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                 <tr>
                     <td data-label="Item">
                         <div>
-                            <span class="item-id"><?php echo htmlspecialchars($row['item_name']); ?></span>
+                            <span class=""><?php echo htmlspecialchars($row['item_name']); ?></span>
                         </div>
                     </td>
                     <td data-label="Brand"><?php echo htmlspecialchars($row['item_brand']); ?></td>

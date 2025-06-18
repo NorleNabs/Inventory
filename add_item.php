@@ -5,7 +5,7 @@ $query = "SELECT * FROM category";
 $result = mysqli_query($conn, $query);
 ?>
 
-<link rel="stylesheet" href="subcontent.css">
+<link rel="stylesheet" href="subcontent_inventory.css">
 <div class="container">
     <div class="form-container shadow-md">
         <form id="addItemForm" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
@@ -15,6 +15,15 @@ $result = mysqli_query($conn, $query);
                     <div class="mb-4">
                         <label for="item_name" class="form-label">Item Name</label>
                         <input type="text" class="form-control" id="item_name" name="item_name"
+                            placeholder="Enter item name" required>
+                        <div class="invalid-feedback">
+                            Please provide an item name.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="item_type" class="form-label">Item Type</label>
+                        <input type="text" class="form-control" id="item_type" name="item_type"
                             placeholder="Enter item name" required>
                         <div class="invalid-feedback">
                             Please provide an item name.

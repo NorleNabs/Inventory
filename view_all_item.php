@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['userID'])) {
+  header("Location: log_in.php");
+  exit;
+}
 require 'server.php';
 
 $itemsPerPage = 5;
@@ -22,11 +27,11 @@ $totalItems = $totalItemsResult->fetch_assoc()['count'];
 $totalPages = ceil($totalItems / $itemsPerPage);
 ?>
 
-<link rel="stylesheet" href="subcontent.css">
+<link rel="stylesheet" href="subcontent_inventory.css">
 
 <div class="container">
-  <div class="table-container " id="itemsTableContainer">
-    <table class="table inventory-table shadow-md">
+  <div class="table-container border shadow-sm" id="itemsTableContainer">
+    <table class="table inventory-table">
       <thead class="table-light">
         <tr>
           <th>Item</th>
@@ -78,18 +83,19 @@ $totalPages = ceil($totalItems / $itemsPerPage);
               </td>
 
               <td data-label="">
-                <button class="action-icon edit-button" title="Edit" data-bs-toggle="modal" data-bs-target="#editItemModal"
-                  data-id="<?= htmlspecialchars($row['itemID']) ?>" data-name="<?= htmlspecialchars($row['item_name']) ?>"
-                  data-brand="<?= htmlspecialchars($row['item_brand']) ?>"
-                  data-image="<?= $row['item_img'] ? base64_encode($row['item_img']) : '' ?>"
-                  data-quantity="<?= htmlspecialchars($row['quantity']) ?>"
-                  data-price="<?= htmlspecialchars($row['price']) ?>"
-                  data-category-id="<?= htmlspecialchars($row['category_id']) ?>"
-                  data-category-name="<?= htmlspecialchars($row['category_name']) ?>"
-                  data-status="<?= htmlspecialchars($row['status']) ?>">
-                  <i class="fas fa-edit"></i>
-                </button>
-
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                  <button class="action-icon edit-button" title="Edit" data-bs-toggle="modal" data-bs-target="#editItemModal"
+                    data-id="<?= htmlspecialchars($row['itemID']) ?>" data-name="<?= htmlspecialchars($row['item_name']) ?>"
+                    data-brand="<?= htmlspecialchars($row['item_brand']) ?>"
+                    data-image="<?= $row['item_img'] ? base64_encode($row['item_img']) : '' ?>"
+                    data-quantity="<?= htmlspecialchars($row['quantity']) ?>"
+                    data-price="<?= htmlspecialchars($row['price']) ?>"
+                    data-category-id="<?= htmlspecialchars($row['category_id']) ?>"
+                    data-category-name="<?= htmlspecialchars($row['category_name']) ?>"
+                    data-status="<?= htmlspecialchars($row['status']) ?>">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                <?php endif; ?>
 
                 <button class="btn view-details-button action-icon" data-bs-toggle="offcanvas"
                   data-bs-target="#offcanvasRight" data-id="<?= htmlspecialchars($row['itemID']) ?>"
@@ -237,10 +243,3 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 
   </div>
 </div>
-
-
-
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
