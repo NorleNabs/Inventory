@@ -21,9 +21,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['role'] = $user['users_role'];
             $_SESSION['email'] = $user['email'];
             $_SESSION['contactNo'] = $user['contactNo'];
-            $_SESSION['department'] = $user['department'];
-            $_SESSION['position'] = $user['position'];
+            $_SESSION['departmentID'] = $user['departmentID'];
+            $_SESSION['positionId'] = $user['positionId'];
 
+        
             header("Location: index.php");
             exit;
         } else {

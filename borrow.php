@@ -15,7 +15,22 @@ $sql = "
 $result = $conn->query($sql);
 
 $deptResult = $conn->query("SELECT * FROM department");
+
+// Fetch department name based on session department ID
+$departmentName = '';
+
+if (isset($_SESSION['departmentID'])) {
+    $departmentID = intval($_SESSION['departmentID']);
+    $query = "SELECT department_name FROM department WHERE departmentID = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $departmentID);
+    $stmt->execute();
+    $stmt->bind_result($departmentName);
+    $stmt->fetch();
+    $stmt->close();
+}
 ?>
+
 
 <link rel="stylesheet" href="subcontent_inventory.css">
 
@@ -67,8 +82,7 @@ $deptResult = $conn->query("SELECT * FROM department");
 
                     <div class="row">
                         <div class="form-group">
-                            <label for="borrowerName" class="form-label">Full Name<span
-                                    class="required">*</span></label>
+                            <label for="borrowerName" class="form-label">Full Name</label>
                             <div class="input-with-icon">
                                 <i class="fas fa-user input-icon"></i>
                                 <input 
@@ -77,15 +91,14 @@ $deptResult = $conn->query("SELECT * FROM department");
                                     name="borrowerName" 
                                     id="borrowerName"
                                     placeholder="Enter your name" 
-                                    required 
                                     value="<?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : ''; ?>"
-                                    disabled
+                                    readonly
                                 >
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="email" class="form-label">Email Address<span class="required">*</span></label>
+                            <label for="email" class="form-label">Email Address</label>
                             <div class="input-with-icon">
                                 <i class="fas fa-envelope input-icon"></i>
                                 <input 
@@ -94,9 +107,8 @@ $deptResult = $conn->query("SELECT * FROM department");
                                     name="email" 
                                     id="email"
                                     placeholder="Enter your email" 
-                                    required 
                                     value="<?php echo isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : ''; ?>"
-                                    disabled
+                                    readonly
                                 >
                             </div>
                         </div>
@@ -113,29 +125,31 @@ $deptResult = $conn->query("SELECT * FROM department");
                                     name="phone" 
                                     id="phone"
                                     placeholder="Enter your Contact Number" 
-                                    required 
                                     value="<?php echo isset($_SESSION['contactNo']) ? htmlspecialchars($_SESSION['contactNo']) : ''; ?>"
-                                    disabled
+                                    readonly
                                 >
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="department" class="form-label">Department</label>
-                            <select class="form-select" id="department" name="department" required>
-                                <option selected disabled>Select department</option>
-                                <?php
-                                if ($deptResult && $deptResult->num_rows > 0) {
-                                    while ($row = $deptResult->fetch_assoc()) {
-                                        $id = $row['departmentID'];
-                                        $name = htmlspecialchars($row['department_name']);
-                                        echo "<option value=\"$id\">$name</option>";
-                                    }
-                                } else {
-                                    echo '<option disabled>No departments available</option>';
-                                }
-                                ?>
-                            </select>
+                            <div class="input-with-icon">
+                                <i class="fas fa-building input-icon"></i>
+                                <input 
+                                    type="text" 
+                                    class="form-control has-icon" 
+                                    name="department" 
+                                    id="department"
+                                    placeholder="Enter your department" 
+                                    value="<?php echo htmlspecialchars($departmentName); ?>"
+                                    readonly
+                                >
+                                <input 
+                                    type="hidden" 
+                                    name="department" 
+                                    value="<?php echo isset($_SESSION['department']) ? intval($_SESSION['department']) : ''; ?>"
+                                >
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -464,7 +464,7 @@ if (!isset($_SESSION['userID'])) {
                                 updateStepper(index);
                                 prevBtn.disabled = index === 0;
                                 formFooter.style.display = currentStep === steps.length - 1 ? 'none' : 'flex';
-                                nextBtn.textContent = index === steps.length - 1 ? 'Submit Request' : 'Next';
+                                nextBtn.textContent = index === steps.length - 2 ? 'Submit Request' : 'Next';
 
                                 updateNextButtonState();
 
@@ -494,7 +494,7 @@ if (!isset($_SESSION['userID'])) {
 
                             function updateNextButtonState() {
                                 const currentStepElement = steps[currentStep];
-                                const inputs = currentStepElement.querySelectorAll('input, select, textarea');
+                                const inputs = currentStepElement.querySelectorAll('select, textarea');
 
                                 let allFilled = true;
 
