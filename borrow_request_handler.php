@@ -1,5 +1,5 @@
 <?php
-include 'server.php'; // this should set up $conn (mysqli connection)
+include 'server.php'; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fullname = $_POST['borrowerName'] ?? '';

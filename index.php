@@ -242,31 +242,49 @@ if (!isset($_SESSION['userID'])) {
                             borrowRequestform.addEventListener('submit', function (e) {
                                 e.preventDefault();
 
-                                const formData = new FormData(borrowRequestform);
+                                Swal.fire({
+                                    title: 'Are you sure?',
+                                    text: 'Do you want to submit this borrow request?',
+                                    icon: 'question',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Yes, submit',
+                                    cancelButtonText: 'Cancel'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        const formData = new FormData(borrowRequestform);
 
-                                fetch('borrow_request_handler.php', {
-                                    method: 'POST',
-                                    body: formData,
-                                    headers: {
-                                        'X-Requested-With': 'XMLHttpRequest'
+                                        fetch('borrow_request_handler.php', {
+                                            method: 'POST',
+                                            body: formData,
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest'
+                                            }
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                borrowRequestform.reset();
+                                                borrowRequestform.classList.remove('was-validated');
+                                                showAlertBorrowRequest();
+                                            } else {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Error',
+                                                    text: data.error || 'Unknown error.'
+                                                });
+                                            }
+                                        })
+                                        .catch(() => {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Submission failed',
+                                                text: 'Try again.'
+                                            });
+                                        });
                                     }
-                                })
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            borrowRequestform.reset();
-                                            borrowRequestform.classList.remove('was-validated');
-                                            showAlertBorrowRequest()
-                                        } else {
-                                            alert('Error: ' + (data.error || 'Unknown error.'));
-                                        }
-                                    })
-                                    .catch(() => {
-                                        alert('Submission failed. Try again.');
-                                    });
+                                    // If cancelled, do nothing
+                                });
                             });
-
-
                         }
 
 
@@ -438,13 +456,7 @@ if (!isset($_SESSION['userID'])) {
                             nextBtn.addEventListener('click', () => {
                                 if (currentStep < steps.length - 1) {
                                     currentStep++;
-                                    showStep(currentStep);
-                                } else {
-                                    if (validateCurrentStep()) {
-                                        document.getElementById('borrowingForm').submit();
-                                    } else {
-                                        alert('Please fill out all required fields before submitting.');
-                                    }
+                                    showStep(currentStep); 
                                 }
                             });
 
@@ -463,7 +475,7 @@ if (!isset($_SESSION['userID'])) {
                                 });
                                 updateStepper(index);
                                 prevBtn.disabled = index === 0;
-                                formFooter.style.display = currentStep === steps.length - 1 ? 'none' : 'flex';
+                                formFooter.style.display = currentStep === steps.length - 0 ? 'none' : 'flex';
                                 nextBtn.textContent = index === steps.length - 1 ? 'Submit Request' : 'Next';
 
                                 updateNextButtonState();
@@ -494,7 +506,7 @@ if (!isset($_SESSION['userID'])) {
 
                             function updateNextButtonState() {
                                 const currentStepElement = steps[currentStep];
-                                const inputs = currentStepElement.querySelectorAll('input, select, textarea');
+                                const inputs = currentStepElement.querySelectorAll('select, textarea');
 
                                 let allFilled = true;
 
