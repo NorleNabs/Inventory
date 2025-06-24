@@ -5,11 +5,12 @@ require 'server.php';
 
 // Fetch unique category names from the category table
 $sql = "
-    SELECT DISTINCT c.category_name
-    FROM all_items ai
-    LEFT JOIN category c ON ai.category_id = c.category_id
-    WHERE c.category_name IS NOT NULL
-    ORDER BY c.category_name ASC
+   SELECT DISTINCT c.category_id, c.category_name
+FROM all_items ai
+LEFT JOIN category c ON ai.category_id = c.category_id
+WHERE c.category_name IS NOT NULL
+ORDER BY c.category_name ASC
+
 ";
 
 $result = $conn->query($sql);
@@ -91,6 +92,9 @@ if (isset($_SESSION['departmentID'])) {
                                     value="<?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : ''; ?>"
                                     readonly
                                 >
+                                <input type="hidden"
+                                name="userID" 
+                                value="<?php echo isset($_SESSION['userID']) ? intval($_SESSION['userID']) : ''; ?>">
                             </div>
                         </div>
 
@@ -143,8 +147,8 @@ if (isset($_SESSION['departmentID'])) {
                                 >
                                 <input 
                                     type="hidden" 
-                                    name="department" 
-                                    value="<?php echo isset($_SESSION['department']) ? intval($_SESSION['department']) : ''; ?>"
+                                    name="departmentID" 
+                                    value="<?php echo isset($_SESSION['departmentID']) ? intval($_SESSION['departmentID']) : ''; ?>"
                                 >
                             </div>
                         </div>
@@ -212,8 +216,9 @@ if (isset($_SESSION['departmentID'])) {
                                     <option selected disabled>Select a category</option>
                                     <?php
                                     while ($row = $result->fetch_assoc()) {
-                                        $cat = htmlspecialchars($row['category_name']);
-                                        echo "<option value=\"$cat\">$cat</option>";
+                                        $catname = htmlspecialchars($row['category_name']);
+                                        $catid = intval($row['category_id']);
+                                        echo "<option value=\"$catid\">$catname</option>";
                                     }
                                     ?>
                                 </select>
@@ -309,12 +314,12 @@ if (isset($_SESSION['departmentID'])) {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="successModalLabel">Success</h5>
+                    <h5 class="modal-title" id="successModalLabel">Borrow Request</h5>
                     <button type="button" class="btn-close borrow-btn" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Request Submited successfully
+                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success borrow-btn" data-bs-dismiss="modal">OK</button>

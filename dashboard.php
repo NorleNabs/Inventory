@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'server.php';
 
 $sql = "SELECT * FROM all_items ORDER BY date DESC";
@@ -52,6 +53,8 @@ if ($categoryResult && $row = $categoryResult->fetch_assoc()) {
 
 $requestSql = "SELECT * FROM borrow_request WHERE action = 'Pending' ORDER BY date DESC LIMIT 7";
 $requestResult = $conn->query($requestSql);
+
+$userID = $_SESSION['userID'];
 
 
 ?>
@@ -121,7 +124,11 @@ $requestResult = $conn->query($requestSql);
     <div class="col-lg-8 mb-4">
         <div class="card border-1 shadow-sm">
             <div class="card-header bg-white border-0">
-                <h5 class="card-title mb-0">Pending Request</h5>
+               <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                    <h5 class="card-title mb-0">Pending Request</h5>
+                <?php else: ?>
+                    <h5 class="card-title mb-0">Your Requests</h5>
+                <?php endif; ?>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -135,19 +142,49 @@ $requestResult = $conn->query($requestSql);
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php while ($row = $requestResult->fetch_assoc()): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['item_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['fullname']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['quantity']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['date']); ?></td>
-                                    <td><span
-                                            class="badge bg-warning"><?php echo htmlspecialchars($row['action']); ?></span>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        </tbody>
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'User'): ?>
+                            <tbody>
+                                <?php
+                                $hasUserRequests = false;
+                                while ($row = $requestResult->fetch_assoc()):
+                                    if ($row['userID'] == $_SESSION['userID']):
+                                        $hasUserRequests = true;
+                                ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($row['item_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['fullname']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['quantity']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['date']); ?></td>
+                                        <td>
+                                            <span class="badge bg-warning"><?php echo htmlspecialchars($row['action']); ?></span>
+                                        </td>
+                                    </tr>
+                                <?php
+                                    endif;
+                                endwhile;
+                                
+                                if (!$hasUserRequests):
+                                ?>
+                                    <tr>
+                                        <td colspan="5" class="text-center">No requests found for your account.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        <?php else: ?>
+                            <tbody>
+                                <?php while ($row = $requestResult->fetch_assoc()): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($row['item_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['fullname']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['quantity']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['date']); ?></td>
+                                        <td>
+                                            <span class="badge bg-warning"><?php echo htmlspecialchars($row['action']); ?></span>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        <?php endif; ?>
                     </table>
                 </div>
             </div>
@@ -155,46 +192,61 @@ $requestResult = $conn->query($requestSql);
     </div>
 
     <div class="col-lg-4 mb-4">
-        <div class="card border-1 shadow-sm">
-            <div class="card-header bg-white border-0">
-                <h5 class="card-title mb-0">Low Stock Items</h5>
-            </div>
-            <div class="card-body p-0">
-                <?php if ($lowStockCount > 0): ?>
-                    <ul class="list-group list-group-flush">
-                        <?php foreach ($lowStockItems as $item): ?>
-                            <li class="list-group-item">
-                                <div class="d-flex align-items-center">
-                                    <!-- Item Name (left) -->
-                                    <div class="flex-grow-1" style="min-width: 100px;">
-                                        <strong><?php echo htmlspecialchars($item['item_name']); ?></strong>
-                                    </div>
+            <div class="card border-1 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                        <h5 class="card-title mb-0">Low Stock Items</h5>
+                    <?php else: ?>
+                        <h5 class="card-title mb-0">In Your Possession</h5>
+                    <?php endif; ?>
+                </div>
+                <div class="card-body p-0">
+                    <?php if ($lowStockCount > 0): ?>
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($lowStockItems as $item): ?>
+                                <li class="list-group-item">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Item Name (left) -->
+                                        <div class="flex-grow-1" style="min-width: 100px;">
+                                            <strong><?php echo htmlspecialchars($item['item_name']); ?></strong>
+                                        </div>
 
-                                    <!-- Category (middle) -->
-                                    <div class="text-muted text-center" style="width: 150px;">
-                                        <?= htmlspecialchars($item['category_name']) ?>
-                                    </div>
+                                        <!-- Category (middle) -->
+                                        <div class="text-muted text-center" style="width: 150px;">
+                                            <?= htmlspecialchars($item['category_name']) ?>
+                                        </div>
 
-                                    <!-- Quantity (right) -->
-                                    <div style="width: 100px;" class="text-end">
-                                        <span class="badge bg-danger rounded-pill">
-                                            <?php echo htmlspecialchars($item['quantity']); ?> left
-                                        </span>
+                                        <!-- Quantity (right) -->
+                                        <div style="width: 100px;" class="text-end">
+                                            <span class="badge bg-danger rounded-pill">
+                                                <?php echo htmlspecialchars($item['quantity']); ?> left
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
 
+                    <?php else: ?>
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                            <div class="p-3 text-muted">All items are in stock.</div>
+                        <?php else: ?>
+                            <div class="p-3 text-muted">You have no items in your possession.</div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                    <div class="card-footer bg-white">
+                        <a href="#" class="btn btn-sm btn-primary">View All Low Stock Items</a>
+                    </div>
                 <?php else: ?>
-                    <div class="p-3 text-muted">All items are in stock.</div>
+                    <div class="card-footer bg-white">
+                        <a href="#" class="btn btn-sm btn-primary">View All Your Items</a>
+                    </div>
                 <?php endif; ?>
             </div>
-            <div class="card-footer bg-white">
-                <a href="#" class="btn btn-sm btn-primary">View All Low Stock Items</a>
-            </div>
-        </div>
     </div>
+
 </div>
 </div>
 </div>

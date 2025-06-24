@@ -41,9 +41,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
           <th>Price</th>
           <th>Status</th>
           <th>Category</th>
-          <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
-            <th>Actions</th>
-          <?php endif; ?>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody id="itemsTableBody">
@@ -83,8 +81,9 @@ $totalPages = ceil($totalItems / $itemsPerPage);
               <td data-label="Category">
                 <span class="category-pill"><?= htmlspecialchars($row['category_name'] ?? ''); ?></span>
               </td>
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+            
               <td data-label="">
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
                   <button class="action-icon edit-button" title="Edit" data-bs-toggle="modal" data-bs-target="#editItemModal"
                     data-id="<?= htmlspecialchars($row['itemID']) ?>" data-name="<?= htmlspecialchars($row['item_name']) ?>"
                     data-brand="<?= htmlspecialchars($row['item_brand']) ?>"
@@ -96,7 +95,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                     data-status="<?= htmlspecialchars($row['status']) ?>">
                     <i class="fas fa-edit"></i>
                   </button>
-                
+                <?php endif; ?>
 
                 <button class="btn view-details-button action-icon" data-bs-toggle="offcanvas"
                   data-bs-target="#offcanvasRight" data-id="<?= htmlspecialchars($row['itemID']) ?>"
@@ -111,8 +110,7 @@ $totalPages = ceil($totalItems / $itemsPerPage);
                   <i class="fas fa-info-circle"></i>
                 </button>
       
-      </td>
-      <?php endif; ?>
+              </td>
       </tr>
     <?php endwhile; ?>
   <?php else: ?>

@@ -3,14 +3,16 @@ require_once 'server.php'; // Your database connection
 
 // Fetch all borrow requests
 $sql = "
-  SELECT * FROM borrow_request 
-  ORDER BY 
+  SELECT br.*, c.category_name
+    FROM borrow_request br
+    LEFT JOIN category c ON br.category_id = c.category_id
+    ORDER BY 
     CASE 
-      WHEN action = 'Pending' AND urgent = 1 THEN 1
-      WHEN action = 'Pending' THEN 2
-      WHEN action = 'Approved' THEN 3
-      WHEN action = 'Rejected' THEN 4
-      ELSE 5
+        WHEN br.action = 'Pending' AND br.urgent = 1 THEN 1
+        WHEN br.action = 'Pending' THEN 2
+        WHEN br.action = 'Approved' THEN 3
+        WHEN br.action = 'Rejected' THEN 4
+        ELSE 5
     END
 ";
 $result = $conn->query($sql);
@@ -19,10 +21,26 @@ $result = $conn->query($sql);
 $countQuery = "SELECT COUNT(*) AS total FROM borrow_request";
 $countResult = $conn->query($countQuery);
 $totalRequests = 0;
+$approvedRequests = 0;
+$disapprovedRequests = 0;
 
 if ($countResult && $countResult->num_rows > 0) {
     $row = $countResult->fetch_assoc();
     $totalRequests = $row['total'];
+}
+
+$approvedQuery = "SELECT COUNT(*) AS total FROM borrow_request WHERE action = 'Approved'";
+$approvedResult = $conn->query($approvedQuery);
+if ($approvedResult && $approvedResult->num_rows > 0) {
+    $row = $approvedResult->fetch_assoc();
+    $approvedRequests = $row['total'];
+}
+
+$disapprovedQuery = "SELECT COUNT(*) AS total FROM borrow_request WHERE action = 'Rejected'";
+$disapprovedResult = $conn->query($disapprovedQuery);
+if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
+    $row = $disapprovedResult->fetch_assoc();
+    $disapprovedRequests = $row['total'];
 }
 
 ?>
@@ -49,8 +67,8 @@ if ($countResult && $countResult->num_rows > 0) {
                     <i class="bi bi-check-circle"></i>
                 </div>
                 <div>
-                    <h3 class="stat-value">86</h3>
-                    <p class="stat-label">Active Borrows</p>
+                    <h3 class="stat-value"><?= $approvedRequests ?></h3>
+                    <p class="stat-label">Approved Request</p>
                 </div>
             </div>
         </div>
@@ -58,12 +76,12 @@ if ($countResult && $countResult->num_rows > 0) {
     <div class="col-md-4 mb-3">
         <div class="stat-card p-3">
             <div class="d-flex align-items-center">
-                <div class="stat-icon bg-warning-soft me-3">
-                    <i class="bi bi-clock-history"></i>
+                <div class="stat-icon bg-danger-soft me-3">
+                    <i class="bi bi-x-circle"></i>
                 </div>
                 <div>
-                    <h3 class="stat-value">12</h3>
-                    <p class="stat-label">Extension Requests</p>
+                    <h3 class="stat-value"><?= $disapprovedRequests ?></h3>
+                    <p class="stat-label">Disapproved Request</p>
                 </div>
             </div>
         </div>
@@ -130,7 +148,7 @@ if ($countResult && $countResult->num_rows > 0) {
                                     <div class="item-details">
                                         <span class="item-name"><?= htmlspecialchars($row['item_name']) ?></span>
                                         <div>
-                                            <span class="item-category"><?= htmlspecialchars($row['category']) ?></span>
+                                            <span class="item-category"><?= htmlspecialchars($row['category_name']) ?></span>
                                             <span class="ms-1">x<?= $row['quantity'] ?></span>
                                         </div>
                                     </div>
@@ -315,8 +333,13 @@ if ($countResult && $countResult->num_rows > 0) {
     }
 
     .bg-success-soft {
-        background-color: rgba(76, 201, 240, 0.15);
+        background-color: rgba(57, 240, 133, 0.15);
         color: var(--success-color);
+    }
+
+    .bg-danger-soft {
+        background-color: rgba(241, 71, 77, 0.15);
+        color: var(--urgent-bg);
     }
 
     .bg-warning-soft {

@@ -266,6 +266,7 @@ if (!isset($_SESSION['userID'])) {
                                                 borrowRequestform.reset();
                                                 borrowRequestform.classList.remove('was-validated');
                                                 showAlertBorrowRequest();
+                                                loadPage('dashboard.php');
                                             } else {
                                                 Swal.fire({
                                                     icon: 'error',
@@ -972,7 +973,7 @@ if (!isset($_SESSION['userID'])) {
                                                 .then(data => {
                                                     if (data.success) {
                                                         Swal.fire('Approved!', 'The request has been approved.', 'success');
-
+                                                        loadPage('borrow_request.php');
                                                         // Update the status cell
                                                         const statusCell = document.getElementById('status-' + requestId);
                                                         if (statusCell) statusCell.textContent = 'Approved';
