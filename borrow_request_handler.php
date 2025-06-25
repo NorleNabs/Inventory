@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'] ?? '';
     $contactNo = $_POST['phone'] ?? '';
     $department = $_POST['departmentID'] ?? '';
-    $item_name = $_POST['itemName'] ?? '';
+    $itemID = $_POST['itemID'] ?? '';
     $quantity = $_POST['quantity'] ?? '';
     $category = $_POST['category'] ?? '';
     $borrow_date = $_POST['borrowDate'] ?? '';
@@ -21,18 +21,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Prepare the SQL insert statement
     $sql = "INSERT INTO borrow_request 
-    (userID, fullname, email, contactNo, departmentID, item_name, quantity, category_id, borrow_date, return_date, extension, purpose, urgent, action, remarks, date) 
+    (userID, fullname, email, contactNo, departmentID, itemID, quantity, category_id, borrow_date, return_date, extension, purpose, urgent, action, remarks, date) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "isssisisssssisss",
+        "isssiiisssssisss",
         $userID,
         $fullname,
         $email,
         $contactNo,
         $department,
-        $item_name,
+        $itemID,
         $quantity,
         $category,
         $borrow_date,

@@ -3,9 +3,11 @@ require_once 'server.php'; // Your database connection
 
 // Fetch all borrow requests
 $sql = "
-  SELECT br.*, c.category_name
+  SELECT br.*, c.category_name,  d.department_name, ai.item_name
     FROM borrow_request br
     LEFT JOIN category c ON br.category_id = c.category_id
+    LEFT JOIN department d ON br.departmentID = d.departmentID
+    LEFT JOIN all_items ai ON br.itemID = ai.itemID
     ORDER BY 
     CASE 
         WHEN br.action = 'Pending' AND br.urgent = 1 THEN 1
@@ -36,7 +38,7 @@ if ($approvedResult && $approvedResult->num_rows > 0) {
     $approvedRequests = $row['total'];
 }
 
-$disapprovedQuery = "SELECT COUNT(*) AS total FROM borrow_request WHERE action = 'Rejected'";
+$disapprovedQuery = "SELECT COUNT(*) AS total FROM borrow_request WHERE action = 'Disapproved'";
 $disapprovedResult = $conn->query($disapprovedQuery);
 if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
     $row = $disapprovedResult->fetch_assoc();
@@ -44,6 +46,8 @@ if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
 }
 
 ?>
+
+<link rel="stylesheet" href="subcontent_management.css">
 
 <!-- Summary Stats -->
 <div class="row summary-stats">
@@ -207,7 +211,17 @@ if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <button class="table-action-btn" data-bs-toggle="tooltip" title="View Details">
+                                    <button class="table-action-btn view-request-details" title="View Details" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+                                    data-requestid="<?php echo $row['borrow_requestId']; ?>" data-requesterid="<?php echo $row['userID']; ?>"
+                                    data-requestername="<?php echo htmlspecialchars($row['fullname']); ?>"
+                                    data-requesteremail="<?php echo htmlspecialchars($row['email']); ?>"
+                                    data-contact="<?php echo htmlspecialchars($row['contactNo']); ?>" 
+                                    data-department="<?php echo htmlspecialchars($row['department_name']); ?>" 
+                                    data-itemname="<?php echo htmlspecialchars($row['item_name']); ?>" data-quantity="<?php echo $row['quantity']; ?>"
+                                    data-action="<?php echo htmlspecialchars($row['action']); ?>"
+                                    data-borroweddate="<?php echo date('d M Y', strtotime($row['borrow_date'])); ?>"
+                                    data-returneddate="<?php echo date('d M Y', strtotime($row['return_date'])); ?>" 
+                                    data-requestremarks="<?php echo htmlspecialchars($row['remarks']); ?>">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                     <?php if ($row['action'] === 'Pending'): ?>
@@ -270,352 +284,20 @@ if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
     </div>
 </div>
 
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasBottomLabel">
+                <i class="fas fa-file-alt me-2"></i>Borrow Request Details
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+  <div class="offcanvas-body small" id="offcanvasContentRequest">
+
+  </div>
+</div>
+
 <style>
-    :root {
-        --primary-color: #4361ee;
-        --secondary-color: #3f37c9;
-        --success-color: #4cc9f0;
-        --light-bg: #f8f9fa;
-        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        --table-header-bg: #4361ee;
-        --urgent-bg: #ff5a5f;
-        --extension-bg: #ffaa5a;
-    }
+    
 
-    .page-title {
-        color: var(--primary-color);
-        font-weight: 600;
-        position: relative;
-        display: inline-block;
-        margin-bottom: 1.5rem;
-    }
-
-    .page-title::after {
-        content: '';
-        position: absolute;
-        bottom: -8px;
-        left: 0;
-        width: 60px;
-        height: 4px;
-        background-color: var(--primary-color);
-        border-radius: 10px;
-    }
-
-    .summary-stats {
-        margin-bottom: 2rem;
-    }
-
-    .stat-card {
-        background-color: white;
-        border-radius: 10px;
-        border: none;
-        box-shadow: var(--card-shadow);
-        transition: transform 0.3s ease;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-    }
-
-    .bg-primary-soft {
-        background-color: rgba(67, 97, 238, 0.15);
-        color: var(--primary-color);
-    }
-
-    .bg-success-soft {
-        background-color: rgba(57, 240, 133, 0.15);
-        color: var(--success-color);
-    }
-
-    .bg-danger-soft {
-        background-color: rgba(241, 71, 77, 0.15);
-        color: var(--urgent-bg);
-    }
-
-    .bg-warning-soft {
-        background-color: rgba(255, 170, 90, 0.15);
-        color: var(--extension-bg);
-    }
-
-    .stat-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 0;
-        color: #333;
-    }
-
-    .stat-label {
-        color: #6c757d;
-        font-size: 0.9rem;
-        margin-bottom: 0;
-    }
-
-    .table-card {
-        background-color: white;
-        border-radius: 10px;
-        border: none;
-        box-shadow: var(--card-shadow);
-        overflow: hidden;
-    }
-
-    .table-header {
-        background-color: white;
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #edf2f9;
-    }
-
-    .table-filter-btn {
-        border-radius: 50px;
-        padding: 0.375rem 1rem;
-        font-size: 0.875rem;
-        background-color: #f1f3fa;
-        color: #6c757d;
-        border: none;
-        margin-right: 0.5rem;
-    }
-
-    .table-filter-btn.active {
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-    .table-container {
-        padding: 0;
-    }
-
-    .custom-table {
-        margin-bottom: 0;
-
-    }
-
-    .custom-table thead th {
-        background-color: var(--table-header-bg);
-        color: black;
-        font-weight: 600;
-        border: none;
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-        white-space: nowrap;
-    }
-
-    .custom-table tbody td {
-        padding: 1rem;
-        vertical-align: middle;
-        border-color: #edf2f9;
-        color: #495057;
-        font-size: 0.875rem;
-    }
-
-    .custom-table tbody tr:hover {
-        background-color: rgba(67, 97, 238, 0.03);
-    }
-
-    .table-action-btn {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: #6c757d;
-        background-color: #f1f3fa;
-        border: none;
-        margin-right: 0.25rem;
-        transition: all 0.2s;
-    }
-
-    .table-action-btn:hover {
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-    }
-
-    .user-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background-color: #e0e8ff;
-        color: var(--primary-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        margin-right: 0.75rem;
-        font-size: 0.875rem;
-    }
-
-    .user-details {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .user-name {
-        font-weight: 600;
-        color: #495057;
-        margin-bottom: 0;
-    }
-
-    .user-email {
-        font-size: 0.75rem;
-        color: #6c757d;
-        margin-bottom: 0;
-    }
-
-    .item-details {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .item-name {
-        font-weight: 600;
-        color: var(--primary-color);
-        margin-bottom: 2px;
-    }
-
-    .item-category {
-        font-size: 0.75rem;
-        color: #6c757d;
-        background-color: #f1f3fa;
-        border-radius: 50px;
-        padding: 2px 8px;
-        display: inline-block;
-    }
-
-    .date-badge {
-        background-color: #e0e8ff;
-        color: var(--primary-color);
-        padding: 4px 10px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        display: inline-block;
-    }
-
-    .status-badge {
-        padding: 4px 10px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        display: inline-block;
-    }
-
-    .status-urgent {
-        background-color: rgba(255, 90, 95, 0.15);
-        color: black;
-    }
-
-    .status-extension {
-        background-color: rgba(255, 170, 90, 0.15);
-        color: black;
-    }
-
-    .status-success {
-        background-color: rgba(76, 240, 169, 0.15);
-        color: black;
-    }
-
-    .no-data {
-        padding: 3rem 0;
-        text-align: center;
-        color: #6c757d;
-    }
-
-    .no-data i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: #d1d3e2;
-    }
-
-    /* Pagination styling */
-    .custom-pagination {
-        padding: 1.25rem 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #edf2f9;
-    }
-
-    .page-info {
-        color: #6c757d;
-        font-size: 0.875rem;
-    }
-
-    .pagination {
-        margin-bottom: 0;
-    }
-
-    .page-link {
-        border: none;
-        color: #6c757d;
-        padding: 0.375rem 0.75rem;
-        margin: 0 0.125rem;
-        border-radius: 4px;
-    }
-
-    .page-link:hover {
-        background-color: #f1f3fa;
-        color: var(--primary-color);
-    }
-
-    .page-item.active .page-link {
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-    /* Responsive optimizations */
-    @media (max-width: 992px) {
-        .custom-table {
-            min-width: 1200px;
-        }
-    }
-
-    /* Tooltip styling */
-    .purpose-tooltip {
-        position: relative;
-        cursor: pointer;
-    }
-
-    .purpose-text {
-        max-width: 100px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: inline-block;
-    }
-
-    /* Loading spinner */
-    .loading-spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(67, 97, 238, 0.1);
-        border-radius: 50%;
-        border-top-color: var(--primary-color);
-        animation: spin 1s linear infinite;
-        margin: 2rem auto;
-        display: none;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
+    
 </style>

@@ -1,6 +1,6 @@
 :root {
     --primary-color: #4361ee;
-    --secondary-color: #f8faff;
+    --secondary-color: #3f37c9;
     --accent-color: #3a0ca3;
     --text-color: #2b2d42;
     --light-gray: #e9ecef;
@@ -81,9 +81,11 @@
 }
 
 .form-panel {
-    background-color: var(--secondary-color);
-    border-radius: 8px;
+    background-color: var(--bg-light);
+    border-radius: 4px;
     padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
 
 }
 
@@ -685,3 +687,191 @@
 .form-section {
     margin-bottom: 25px;
 }
+
+
+
+ /* Off Canvas Design */
+
+
+ .offcanvas {
+            width: 450px !important;
+            border-left: 3px solid var(--secondary-color);
+            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+            border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+        }
+
+        .offcanvas-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .offcanvas-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: skewX(-15deg);
+        }
+
+        .offcanvas-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            z-index: 1;
+            position: relative;
+        }
+
+        .btn-close {
+            filter: invert(1);
+            opacity: 0.8;
+            z-index: 1;
+            position: relative;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .offcanvas-body {
+            padding: 1.5rem;
+            background: var(--light-bg);
+        }
+
+        .item-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detail-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .detail-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .detail-label {
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-label h4 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-value:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-value span {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .description-text {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--secondary-color);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Status indicators */
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .status-pending {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .status-overdue {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* Icons for different sections */
+        .detail-label::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .borrower-info .detail-label::before {
+            content: "\f007";
+        }
+
+        .request-info .detail-label::before {
+            content: "\f0cb";
+        }
+
+        .date-info .detail-label::before {
+            content: "\f073";
+        }
+
+        .description-info .detail-label::before {
+            content: "\f15c";
+        }

@@ -5,7 +5,7 @@ if (isset($_GET['category'])) {
     $category = (int) $_GET['category'];
 
     $stmt = $conn->prepare("
-        SELECT ai.item_name, ai.quantity 
+        SELECT ai.item_name, ai.quantity, ai.itemID 
         FROM all_items ai
         LEFT JOIN category c ON ai.category_id = c.category_id
         WHERE c.category_id = ?

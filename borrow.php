@@ -6,10 +6,10 @@ require 'server.php';
 // Fetch unique category names from the category table
 $sql = "
    SELECT DISTINCT c.category_id, c.category_name
-FROM all_items ai
-LEFT JOIN category c ON ai.category_id = c.category_id
-WHERE c.category_name IS NOT NULL
-ORDER BY c.category_name ASC
+    FROM all_items ai
+    LEFT JOIN category c ON ai.category_id = c.category_id
+    WHERE c.category_name IS NOT NULL
+    ORDER BY c.category_name ASC
 
 ";
 
@@ -242,7 +242,7 @@ if (isset($_SESSION['departmentID'])) {
                             <div class="form-group">
                                 <label for="itemName" class="form-label">Item Name<span
                                         class="required">*</span></label>
-                                <select class="form-select" id="itemName" name="itemName" required>
+                                <select class="form-select" id="itemName" name="itemID" required>
                                     <option selected disabled>Select Item</option>
                                 </select>
                             </div>

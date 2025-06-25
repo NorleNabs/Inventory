@@ -244,7 +244,7 @@ if (!isset($_SESSION['userID'])) {
 
                                 Swal.fire({
                                     title: 'Are you sure?',
-                                    text: 'Do you want to submit this borrow request?',
+                                    text: 'Do you want to submit this Request?',
                                     icon: 'question',
                                     showCancelButton: true,
                                     confirmButtonText: 'Yes, submit',
@@ -907,11 +907,11 @@ if (!isset($_SESSION['userID'])) {
                                         .then(res => res.json())
                                         .then(data => {
                                             if (data.success) {
-                                                // Close modal (if using Bootstrap modal)
+                                                
                                                 const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
                                                 if (modal) modal.hide();
 
-                                                // Success alert
+                                                
                                                 Swal.fire({
                                                     icon: 'success',
                                                     title: 'User added successfully!',
@@ -919,7 +919,7 @@ if (!isset($_SESSION['userID'])) {
                                                     timer: 1500
                                                 });
 
-                                                // Reset form
+                                                
                                                 addUserForm.reset();
                                                 addUserForm.classList.remove('was-validated');
                                             } else {
@@ -952,7 +952,6 @@ if (!isset($_SESSION['userID'])) {
                                     const requestId = this.getAttribute('data-id');
                                     const approveButton = this;
                                     console.log('Request ID:', requestId);
-                                    // Show confirmation dialog
                                     Swal.fire({
                                         title: 'Are you sure to approve this request?',
                                         icon: 'question',
@@ -961,7 +960,6 @@ if (!isset($_SESSION['userID'])) {
                                         cancelButtonText: 'No'
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            // User clicked Yes - proceed with AJAX
                                             const formData = new FormData();
                                             formData.append('request_id', requestId);
 
@@ -974,13 +972,13 @@ if (!isset($_SESSION['userID'])) {
                                                     if (data.success) {
                                                         Swal.fire('Approved!', 'The request has been approved.', 'success');
                                                         loadPage('borrow_request.php');
-                                                        // Update the status cell
-                                                        const statusCell = document.getElementById('status-' + requestId);
-                                                        if (statusCell) statusCell.textContent = 'Approved';
+                                                        
+                                                        // const statusCell = document.getElementById('status-' + requestId);
+                                                        // if (statusCell) statusCell.textContent = 'Approved';
 
-                                                        // Disable or hide the approve button
-                                                        approveButton.disabled = true;
-                                                        approveButton.title = "Already Approved";
+                                                    
+                                                        // approveButton.disabled = true;
+                                                        // approveButton.title = "Already Approved";
                                                     } else {
                                                         Swal.fire('Error', data.error || 'Approval failed.', 'error');
                                                     }
@@ -1015,13 +1013,13 @@ if (!isset($_SESSION['userID'])) {
                                             .then(res => res.json())
                                             .then(data => {
                                                 if (data.success) {
-                                                    Swal.fire('Disapproved', 'The request has been disapproved.', 'success');
+                                                    Swal.fire('Disapproved', 'The request has been Disapproved.', 'success');
+                                                    loadPage('borrow_request.php');
+                                                    // const statusCell = document.getElementById('status-' + requestId);
+                                                    // if (statusCell) statusCell.textContent = 'Disapproved';
 
-                                                    const statusCell = document.getElementById('status-' + requestId);
-                                                    if (statusCell) statusCell.textContent = 'Disapproved';
-
-                                                    disapproveButton.disabled = true;
-                                                    disapproveButton.title = "Already Disapproved";
+                                                    // disapproveButton.disabled = true;
+                                                    // disapproveButton.title = "Already Disapproved";
                                                 } else {
                                                     Swal.fire('Error', data.error || 'Disapproval failed.', 'error');
                                                 }
@@ -1033,6 +1031,58 @@ if (!isset($_SESSION['userID'])) {
                                     });
                                 });
                             });
+
+                            function bindViewRequestDetailsButtons() {
+                                document.querySelectorAll('.view-request-details').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const imageBase64 = this.dataset.image;
+                                        const content = `
+                                            
+                                            <div class="item-details-grid">
+                                                
+                                                <div class="detail-card full-width">
+                                                    <div class="detail-label"><h4>Borrowers Information</h4></div>
+                                                    <div class="detail-value"><span style="font-weight: bold;">Name:</span> ${this.dataset.requestername}</div>
+                                                    <div class="detail-value"><span style="font-weight: bold;">Email:</span> ${this.dataset.requesteremail}</div>
+                                                    <div class="detail-value"><span style="font-weight: bold;">Contact:</span> ${this.dataset.contact}</div>
+                                                    <div class="detail-value"><span style="font-weight: bold;">Department:</span> ${this.dataset.department}</div>
+                                                </div>
+                                                
+                                                
+                                                <div class="detail-card full-width">
+                                                    <div class="detail-label"><h4>Request Details</h4></div>
+                                                    <div class="detail-value"><span style="font-weight: bold;">Request No.:</span> ${this.dataset.requestid}</div>
+                                                    <div class="detail-value"><span style="font-weight: bold;">Item Name:</span> ${this.dataset.itemname}</div>
+                                                    <div class="detail-value"><span style="font-weight: bold;">Quantity:</span> ${this.dataset.quantity}</div>
+                                                    <div class="detail-value"><span style="font-weight: bold;">Status:</span> ${this.dataset.action}</div>
+                                                    <div class="detail-value">
+                                                        <img src="${imageBase64}" alt="Item Image" style="max-width: 100%; height: auto; margin-top: 10px; border-radius: 8px;"/>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Borrowed Date</div>
+                                                <div class="detail-value">${this.dataset.borroweddate}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card">
+                                                <div class="detail-label">Return Date</div>
+                                                <div class="detail-value">${this.dataset.returneddate}</div>
+                                                </div>
+                                                
+                                                <div class="detail-card full-width">
+                                                <div class="detail-label">Description</div>
+                                                <div class="detail-value description-text">${this.dataset.requestremarks.replace(/\n/g, '<br>')}</div>
+                                                </div>
+                                            </div>
+                                        `;
+                                        document.getElementById('offcanvasContentRequest').innerHTML = content;
+                                    });
+                                });
+                            }
+
+                            bindViewRequestDetailsButtons()
+
                         }
 
                         function handleCategoryChange(selectElement) {
@@ -1246,7 +1296,7 @@ if (!isset($_SESSION['userID'])) {
 
                     items.forEach(function (item) {
                         const option = document.createElement('option');
-                        option.value = item.item_name;
+                        option.value = item.itemID;
                         option.textContent = item.item_name;
                         option.dataset.quantity = item.quantity; // ✅ Set quantity as data-attribute
                         itemSelect.appendChild(option);

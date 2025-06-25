@@ -51,7 +51,9 @@ if ($categoryResult && $row = $categoryResult->fetch_assoc()) {
     $categoryCount = $row['total_categories'];
 }
 
-$requestSql = "SELECT * FROM borrow_request WHERE action = 'Pending' ORDER BY date DESC LIMIT 7";
+$requestSql = "SELECT br.*, ai.item_name FROM borrow_request br
+JOIN all_items ai ON br.itemID = ai.itemID
+WHERE action = 'Pending' ORDER BY date DESC LIMIT 7";
 $requestResult = $conn->query($requestSql);
 
 $userID = $_SESSION['userID'];
