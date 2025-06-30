@@ -20,12 +20,12 @@ $totalItems = $totalItemsResult->fetch_assoc()['count'];
 $totalPages = ceil($totalItems / $itemsPerPage);
 ?>
 
-<link rel="stylesheet" href="subcontent.css">
+<link rel="stylesheet" href="subcontent_inventory.css">
 
 <table class="table inventory-table shadow-md">
     <thead class="table-light">
         <tr>
-            <th>Item</th>
+            <th class="table-column">Item</th>
             <th>Brand</th>
             <th>Image</th>
             <th>Quantity</th>

@@ -5,6 +5,7 @@
     --text-color: #2b2d42;
     --light-gray: #e9ecef;
     --border-color: #dee2e6;
+    --table-header-bg: #4361ee;
 }
 
 :root {
@@ -370,6 +371,8 @@
 }
 
 .inventory-table th,
+  
+  
   .inventory-table td {
     vertical-align: middle;
     padding: 0.75rem;

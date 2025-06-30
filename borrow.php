@@ -245,14 +245,27 @@ if (isset($_SESSION['departmentID'])) {
                                 <select class="form-select" id="itemName" name="itemID" required>
                                     <option selected disabled>Select Item</option>
                                 </select>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="urgentRequest" name="urgentRequest">
+                                    <label class="form-check-label" for="urgentRequest">Mark as urgent request</label>
+                                 </div>
+                                
+                            </div>
+
+                            
+
+                            <div class="form-group">
+                                <div class="item-image-form">
+                                    <div id="imageCanvas" class="image-canvas">
+                                        <span id="noImageText">No Image</span>
+                                        <img id="itemImage" class="form-image" src="" alt="Item Image" style="display: none;">
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
 
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="urgentRequest" name="urgentRequest">
-                            <label class="form-check-label" for="urgentRequest">Mark as urgent request</label>
-                        </div>
                     </div>
                 </div>
             </div>

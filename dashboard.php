@@ -51,8 +51,9 @@ if ($categoryResult && $row = $categoryResult->fetch_assoc()) {
     $categoryCount = $row['total_categories'];
 }
 
-$requestSql = "SELECT br.*, ai.item_name FROM borrow_request br
+$requestSql = "SELECT br.*, ai.item_name, c.category_name FROM borrow_request br
 JOIN all_items ai ON br.itemID = ai.itemID
+LEFT JOIN category c ON ai.category_id = c.category_id
 WHERE action = 'Pending' ORDER BY date DESC LIMIT 7";
 $requestResult = $conn->query($requestSql);
 
@@ -60,8 +61,6 @@ $userID = $_SESSION['userID'];
 
 
 ?>
-
-
 
 
 <div class="row">
@@ -138,7 +137,11 @@ $userID = $_SESSION['userID'];
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th>User</th>
+                                <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'User'): ?>
+                                    <th>User</th>
+                                <?php else: ?>
+                                    <th>Category</th>
+                                <?php endif; ?>
                                 <th>Quantity</th>
                                 <th>Date</th>
                                 <th>Status</th>
@@ -154,7 +157,7 @@ $userID = $_SESSION['userID'];
                                 ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($row['item_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['fullname']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['category_name']); ?></td>
                                         <td><?php echo htmlspecialchars($row['quantity']); ?></td>
                                         <td><?php echo htmlspecialchars($row['date']); ?></td>
                                         <td>

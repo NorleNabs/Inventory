@@ -14,7 +14,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($result && $result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
-        // ✅ Use password_verify to check hashed password
         if (password_verify($password, $user['password'])) {
             $_SESSION['userID'] = $user['userID'];
             $_SESSION['username'] = $user['username'];
@@ -24,17 +23,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['departmentID'] = $user['departmentID'];
             $_SESSION['positionId'] = $user['positionId'];
 
-        
+            $stmt->close();
+            $conn->close();
+
             header("Location: index.php");
             exit;
         } else {
-            echo "❌ Incorrect password.";
+            $_SESSION['login_error'] = "Incorrect password.";
         }
     } else {
-        echo "❌ No account found with that username.";
+        $_SESSION['login_error'] = "No account found with that username.";
     }
 
     $stmt->close();
     $conn->close();
+
+    header("Location: log_in.php");
+    exit;
 }
 ?>

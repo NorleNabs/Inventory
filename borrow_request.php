@@ -45,13 +45,20 @@ if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
     $disapprovedRequests = $row['total'];
 }
 
+$pendingQuery = "SELECT COUNT(*) AS total FROM borrow_request WHERE action = 'Pending'";
+$pendingResult = $conn->query($pendingQuery);
+if ($pendingResult && $pendingResult->num_rows > 0) {
+    $row = $pendingResult->fetch_assoc();
+    $pendingRequests = $row['total'];
+}
+
 ?>
 
-<link rel="stylesheet" href="subcontent_management.css">
+
 
 <!-- Summary Stats -->
 <div class="row summary-stats">
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-4">
         <div class="stat-card p-3">
             <div class="d-flex align-items-center">
                 <div class="stat-icon bg-primary-soft me-3">
@@ -64,7 +71,20 @@ if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-4">
+        <div class="stat-card p-3">
+            <div class="d-flex align-items-center">
+                <div class="stat-icon bg-warning-soft me-3">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <h3 class="stat-value"><?= $pendingRequests ?></h3>
+                    <p class="stat-label">Pending Request</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
         <div class="stat-card p-3">
             <div class="d-flex align-items-center">
                 <div class="stat-icon bg-success-soft me-3">
@@ -77,7 +97,7 @@ if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-4">
         <div class="stat-card p-3">
             <div class="d-flex align-items-center">
                 <div class="stat-icon bg-danger-soft me-3">
@@ -226,7 +246,9 @@ if ($disapprovedResult && $disapprovedResult->num_rows > 0) {
                                     </button>
                                     <?php if ($row['action'] === 'Pending'): ?>
                                         <button class="table-action-btn approve-btn"
-                                            data-id="<?php echo $row['borrow_requestId']; ?>" data-bs-toggle="tooltip"
+                                            data-id="<?php echo $row['borrow_requestId']; ?>"
+                                            data-quantity="<?php echo $row['quantity']; ?>"
+                                            data-bs-toggle="tooltip"
                                             title="Approve">
                                             <i class="bi bi-check-lg"></i>
                                         </button>

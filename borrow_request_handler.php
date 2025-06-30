@@ -19,20 +19,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $remarks = $_POST['remarks'] ?? '';
     $date = date('Y-m-d H:i:s');
 
+    
+    
+    $base64 = $_POST['imageSrc'];
+
+    // Remove the prefix (data:image/jpeg;base64,)
+    $base64 = preg_replace('#^data:image/\w+;base64,#i', '', $base64);
+
+    $imageData = base64_decode($base64);
+
+    if ($imageData === false) {
+        echo json_encode(['success' => false, 'error' => 'Invalid image data']);
+        exit;
+    }
+
+
     // Prepare the SQL insert statement
     $sql = "INSERT INTO borrow_request 
-    (userID, fullname, email, contactNo, departmentID, itemID, quantity, category_id, borrow_date, return_date, extension, purpose, urgent, action, remarks, date) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    (userID, fullname, email, contactNo, departmentID, itemID, item_img,  quantity, category_id, borrow_date, return_date, extension, purpose, urgent, action, remarks, date) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+    $imagePlaceholder = null;
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "isssiiisssssisss",
+        "isssiibisssssisss",
         $userID,
         $fullname,
         $email,
         $contactNo,
         $department,
         $itemID,
+        $imagePlaceholder, 
         $quantity,
         $category,
         $borrow_date,
@@ -45,7 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $date
     );
 
-    // Execute and check result
+    $stmt->send_long_data(6, $imageData); 
+   
     if ($stmt->execute()) {
         echo json_encode(['success' => true]);
     } else {

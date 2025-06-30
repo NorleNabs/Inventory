@@ -16,6 +16,7 @@ if (!isset($_SESSION['userID'])) {
     <title>InVex</title>
     <link rel="icon" href="anong-context-nung-nakadila-si-alden-v0-q630lpmhcj0f1.png" type="image/png">
     <link rel="stylesheet" href="idex.css">
+    <link rel="stylesheet" href="subcontent_management.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
         rel="stylesheet">
@@ -83,9 +84,9 @@ if (!isset($_SESSION['userID'])) {
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a href="#" class="load-content">
                                     <i class="bi bi-clipboard-check fs-5 sub-icon"></i>
-                                    <span class="submenu-text">Stock Count</span>
+                                    <span class="submenu-text">For Release</span>
                                 </a>
                             </li>
                             <li>
@@ -237,56 +238,7 @@ if (!isset($_SESSION['userID'])) {
 
 
 
-                        const borrowRequestform = document.getElementById('borrowingForm');
-                        if (borrowRequestform) {
-                            borrowRequestform.addEventListener('submit', function (e) {
-                                e.preventDefault();
-
-                                Swal.fire({
-                                    title: 'Are you sure?',
-                                    text: 'Do you want to submit this Request?',
-                                    icon: 'question',
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Yes, submit',
-                                    cancelButtonText: 'Cancel'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        const formData = new FormData(borrowRequestform);
-
-                                        fetch('borrow_request_handler.php', {
-                                            method: 'POST',
-                                            body: formData,
-                                            headers: {
-                                                'X-Requested-With': 'XMLHttpRequest'
-                                            }
-                                        })
-                                        .then(res => res.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                borrowRequestform.reset();
-                                                borrowRequestform.classList.remove('was-validated');
-                                                showAlertBorrowRequest();
-                                                loadPage('dashboard.php');
-                                            } else {
-                                                Swal.fire({
-                                                    icon: 'error',
-                                                    title: 'Error',
-                                                    text: data.error || 'Unknown error.'
-                                                });
-                                            }
-                                        })
-                                        .catch(() => {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Submission failed',
-                                                text: 'Try again.'
-                                            });
-                                        });
-                                    }
-                                    // If cancelled, do nothing
-                                });
-                            });
-                        }
+                       
 
 
                         function validateFileSize(input) {
@@ -549,8 +501,75 @@ if (!isset($_SESSION['userID'])) {
                             document.getElementById('itemName').addEventListener('change', function () {
                                 const selectedOption = this.options[this.selectedIndex];
                                 const quantity = selectedOption.dataset.quantity || 'N/A';
+                                const itemImage = selectedOption.dataset.item_img || '';
+                                const img = document.getElementById('itemImage');
+                                const noImageText = document.getElementById('noImageText');
                                 document.getElementById('availableQuantity').textContent = quantity;
+                                if (itemImage) {
+                                    img.src = "data:image/jpeg;base64," + itemImage;
+                                    img.style.display = 'block';
+                                    noImageText.style.display = 'none';
+                                } else {
+                                    img.src = "";
+                                    img.style.display = 'none';
+                                    noImageText.style.display = 'block';
+                                }
                             });
+
+                             const borrowRequestform = document.getElementById('borrowingForm');
+                             const imageSrc = document.getElementById('itemImage').src;
+                            if (borrowRequestform) {
+                                borrowRequestform.addEventListener('submit', function (e) {
+                                    e.preventDefault();
+
+                                    Swal.fire({
+                                        title: 'Are you sure?',
+                                        text: 'Do you want to submit this Request?',
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes, submit',
+                                        cancelButtonText: 'Cancel'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            const formData = new FormData(borrowRequestform);                                           
+                                                formData.append('imageSrc', imageSrc);                                           
+
+                                            fetch('borrow_request_handler.php', {
+                                                method: 'POST',
+                                                body: formData,
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest'
+                                                }
+                                            })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    borrowRequestform.reset();
+                                                    borrowRequestform.classList.remove('was-validated');
+                                                    showAlertBorrowRequest();
+                                                    loadPage('dashboard.php');
+                                                } else {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Error',
+                                                        text: data.error || 'Unknown error.'
+                                                    });
+                                                }
+                                            })
+                                            .catch(() => {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Submission failed',
+                                                    text: 'Try again.'
+                                                });
+                                            });
+                                        }
+                                        // If cancelled, do nothing
+                                    });
+                                });
+                            }
+
+                            
 
 
 
@@ -950,6 +969,7 @@ if (!isset($_SESSION['userID'])) {
                             document.querySelectorAll('.approve-btn').forEach(button => {
                                 button.addEventListener('click', function () {
                                     const requestId = this.getAttribute('data-id');
+                                    const quantity = this.getAttribute('data-quantity');
                                     const approveButton = this;
                                     console.log('Request ID:', requestId);
                                     Swal.fire({
@@ -962,6 +982,7 @@ if (!isset($_SESSION['userID'])) {
                                         if (result.isConfirmed) {
                                             const formData = new FormData();
                                             formData.append('request_id', requestId);
+                                            formData.append('quantity', quantity);
 
                                             fetch('approverequest_handler.php', {
                                                 method: 'POST',
@@ -976,7 +997,6 @@ if (!isset($_SESSION['userID'])) {
                                                         // const statusCell = document.getElementById('status-' + requestId);
                                                         // if (statusCell) statusCell.textContent = 'Approved';
 
-                                                    
                                                         // approveButton.disabled = true;
                                                         // approveButton.title = "Already Approved";
                                                     } else {
@@ -1290,15 +1310,18 @@ if (!isset($_SESSION['userID'])) {
                     const items = JSON.parse(xhr.responseText);
                     const itemSelect = document.getElementById('itemName');
                     const quantitySpan = document.getElementById('availableQuantity');
-
+                    const itemImage = document.getElementById('itemImage');
+                    console.log(items);
                     itemSelect.innerHTML = '<option selected disabled>Select Item</option>';
                     quantitySpan.textContent = ''; // Clear on category change
+                    itemImage.src = ''; // Clear image on category change
 
                     items.forEach(function (item) {
                         const option = document.createElement('option');
                         option.value = item.itemID;
                         option.textContent = item.item_name;
                         option.dataset.quantity = item.quantity; // ✅ Set quantity as data-attribute
+                        option.dataset.item_img = item.item_img || '';
                         itemSelect.appendChild(option);
                     });
                 }

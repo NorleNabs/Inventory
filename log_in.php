@@ -1,3 +1,8 @@
+<?php
+session_start();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -137,7 +142,6 @@
                                 <input type="text" class="form-control" id="username" name="username"
                                     placeholder="Your username" required>
                                 <label for="username">Username</label>
-                                <div class="invalid-feedback">Please enter your username</div>
                             </div>
 
 
@@ -145,7 +149,10 @@
                                 <input type="password" class="form-control" id="password" name="password"
                                     placeholder="Password" required>
                                 <label for="password">Password</label>
-                                <div class="invalid-feedback">Password must be at least 6 characters</div>
+                                <?php if (!empty($_SESSION['login_error'])): ?>
+                                    <div class="invalid-feedback" style="display:block;"><?php echo htmlspecialchars($_SESSION['login_error']); ?></div>
+                                    <?php unset($_SESSION['login_error']); ?>
+                                <?php endif; ?>
                             </div>
 
 
