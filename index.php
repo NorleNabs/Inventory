@@ -84,7 +84,7 @@ if (!isset($_SESSION['userID'])) {
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="load-content">
+                                <a href="for_release.php" class="load-content">
                                     <i class="bi bi-clipboard-check fs-5 sub-icon"></i>
                                     <span class="submenu-text">For Release</span>
                                 </a>
@@ -193,6 +193,7 @@ if (!isset($_SESSION['userID'])) {
                 'report.html': 'Reports',
                 'borrow_request.php': 'Borrow Request',
                 'user_management.php': 'User Management',
+                'for_release.php': 'For Release',
 
                 // Add more as needed
             };
